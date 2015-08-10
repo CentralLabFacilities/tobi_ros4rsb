@@ -1,0 +1,9 @@
+<launch>
+
+    <arg name="use_sim" default="false" />
+
+    <arg     if="$(arg use_sim)" name="part_sim" value="sim" />
+    <arg unless="$(arg use_sim)" name="part_sim" value="mobile" />
+
+    <include file="$(find ros4rsb)/launch/ros4rsb_$(arg part_sim)_dynamic_map.launch" />
+</launch>

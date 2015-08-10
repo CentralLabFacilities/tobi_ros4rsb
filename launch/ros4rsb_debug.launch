@@ -1,0 +1,7 @@
+<launch>
+    <!--param name="use_sim_time" value="true"/-->
+    <node pkg="ros4rsb" type="ros4rsb" name="ros4rsb" output="screen" launch-prefix="gdb -ex run --args">
+      <!--param name="inverted_laser" value="true"/-->
+
+    </node>
+</launch>

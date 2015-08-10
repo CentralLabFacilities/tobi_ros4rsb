@@ -1,0 +1,55 @@
+<package>
+  <name>ros4rsb</name>
+  <description>
+    A ROS to RSB bridge
+  </description>
+  <author>lziegler, prenner, pdressel</author>
+  <maintainer email="lziegler@techfak.uni-bielefeld.de">Leon Ziegler</maintainer>
+  <license>BSD</license>
+  <version>1.0.0</version>
+
+  <build_depend>tf</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslib</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>diagnostic_msgs</build_depend>
+  <build_depend>move_base</build_depend>
+  <build_depend>move_base_msgs</build_depend>
+  <build_depend>bullet</build_depend>
+  <build_depend>p2os_driver</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>base_local_planner</build_depend>
+  <build_depend>costmap_2d</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>wave_detection</build_depend>
+  <build_depend>move_base</build_depend>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>message_runtime</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>diagnostic_msgs</run_depend>
+  <run_depend>move_base</run_depend>
+  <run_depend>move_base_msgs</run_depend>
+  <run_depend>bullet</run_depend>
+  <run_depend>p2os_driver</run_depend>
+  <run_depend>actionlib_msgs</run_depend>
+  <run_depend>actionlib</run_depend>
+  <run_depend>base_local_planner</run_depend>
+  <run_depend>costmap_2d</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>wave_detection</run_depend>
+  <run_depend>move_base</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>roslib</run_depend>
+</package>
+

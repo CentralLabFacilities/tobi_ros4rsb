@@ -1,0 +1,8 @@
+<launch>
+    <node name="ros4rsb" pkg="ros4rsb" type="ros4rsb" output="screen"  respawn="true" respawn_delay="5">
+				<remap from="/odom" to="/omnibase_odom"/>
+		</node>
+    <param name="isLocalNavigation" value="true" type="bool" />
+    <param name="isInterleavedLaserData" value="false" type="bool" /> 
+<param name="laser_topic" value="/scan" type="string" />
+</launch>
