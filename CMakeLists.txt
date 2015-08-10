@@ -127,6 +127,7 @@ set(SOURCES src/ros4rsb.cpp
             src/publishers/SlamPosPublisher.cpp
             src/publishers/GlobalPlanPublisher.cpp
             src/publishers/WaveDetectionPublisher.cpp
+            src/listeners/BoxListener.cpp
             #src/actuators/VelocityCommander.cpp
             #src/servers/NavigationServer.cpp         
             src/actuators/VelocityCommander.cpp
