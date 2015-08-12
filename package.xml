@@ -25,7 +25,7 @@
   <build_depend>base_local_planner</build_depend>
   <build_depend>costmap_2d</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
-  <build_depend>wave_detection</build_depend>
+  <build_depend>waving_detection</build_depend>
   <build_depend>move_base</build_depend>
   
   <buildtool_depend>catkin</buildtool_depend>
@@ -45,7 +45,7 @@
   <run_depend>base_local_planner</run_depend>
   <run_depend>costmap_2d</run_depend>
   <run_depend>dynamic_reconfigure</run_depend>
-  <run_depend>wave_detection</run_depend>
+  <run_depend>waving_detection</run_depend>
   <run_depend>move_base</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>std_msgs</run_depend>

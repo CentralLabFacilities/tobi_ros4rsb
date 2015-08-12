@@ -7,9 +7,6 @@
 
 #include "GlobalPlanPublisher.h"
 
-#include <LinearMath/btQuaternion.h> 
-#include <LinearMath/btMatrix3x3.h>
-
 #define WAYPOINTS_PER_MESSAGE 10
 
 using namespace std;

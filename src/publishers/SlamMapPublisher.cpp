@@ -20,8 +20,7 @@ namespace ros4rsb {
 
     SlamMapPublisher::SlamMapPublisher(
             string name,
-            NodeHandle node,
-            bool isLocalNavigation) :
+            NodeHandle node) :
     Publisher(name, node),
     hasData(false) {
 

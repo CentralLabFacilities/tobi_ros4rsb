@@ -7,9 +7,6 @@
 
 #include "SlamPosPublisher.h"
 
-#include <LinearMath/btQuaternion.h> 
-#include <LinearMath/btMatrix3x3.h>
-
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -22,22 +19,14 @@ using namespace boost;
 
 namespace ros4rsb {
 
-SlamPosPublisher::SlamPosPublisher(string name, NodeHandle node,
-		bool isLocalNavigation) :
+SlamPosPublisher::SlamPosPublisher(string name, NodeHandle node) :
 	Publisher(name, node), hasData(false) {
 
-	if (isLocalNavigation) {
-		function<void(const nav_msgs::Odometry::ConstPtr&)> m1 = bind(
-				mem_fn(&SlamPosPublisher::local_callback), this, _1);
-		rosSubscriber = node.subscribe("odom", 1000, m1);
-		tfListener = new tf::TransformListener(node);
-		std::cout << name << " subscribed to odom topic." << std::endl;
-	} else {
-		function<void(const geometry_msgs::PoseWithCovarianceStampedConstPtr&)>
-				m0 = bind(mem_fn(&SlamPosPublisher::global_callback), this, _1);
-		rosSubscriber = node.subscribe("amcl_pose", 1000, m0);
-		std::cout << name << " subscribed to acml_pose topic." << std::endl;
-	}
+    function<void(const nav_msgs::Odometry::ConstPtr&)> m1 = bind(
+            mem_fn(&SlamPosPublisher::local_callback), this, _1);
+    rosSubscriber = node.subscribe("pose", 1000, m1);
+    tfListener = new tf::TransformListener(node);
+    std::cout << name << " subscribed to pose topic." << std::endl;
 
 	runner = boost::thread(&SlamPosPublisher::publishThread, this);
 

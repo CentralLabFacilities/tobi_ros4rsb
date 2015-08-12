@@ -24,12 +24,9 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "ros4rsb");
 
     ros::NodeHandle n;
-    bool isLocalNavigation;
     bool isInterleavedLaserData = false;
 
-    ros::param::param<bool>("/isLocalNavigation", isLocalNavigation, true);
-    //ros::param::param<bool>("/isInterleavedLaserData", isInterleavedLaserData, false);
-    cout << "This version sets isInterleaved to false!!!" << endl;
+    ros::param::param<bool>("/isInterleavedLaserData", isInterleavedLaserData, isInterleavedLaserData);
 
     // Initialize publishers and servers
     SlamPosPublisher* slamPosPublisher;
@@ -39,8 +36,8 @@ int main(int argc, char **argv) {
         OdometryDataPublisher odometryPublisher("/ros4rsb/odometryData", n);
         SpeedDataPublisher speedPublisher("/ros4rsb/speedData", n);
         StallDataPublisher stallPublisher("/ros4rsb/stallData", n);
-        SlamMapPublisher slamMapPublisher("/ros4rsb/slamMap", n, isLocalNavigation);
-        slamPosPublisher = new SlamPosPublisher("/ros4rsb/slampose", n, isLocalNavigation);
+        SlamMapPublisher slamMapPublisher("/ros4rsb/slamMap", n);
+        slamPosPublisher = new SlamPosPublisher("/ros4rsb/slampose", n);
         WaveDetectionPublisher waveDetectionPublisher("/ros4rsb/handPos", n);
         GlobalPlanPublisher globalPlanPublisher("/ros4rsb/globalplan", n);
 
@@ -48,7 +45,7 @@ int main(int argc, char **argv) {
         BoxListener boxListener("/boxes", "box_marker", n);
 
         // Server
-        NavigationServer navigationServer("/nav_server", n, slamPosPublisher, isLocalNavigation);
+        NavigationServer navigationServer("/nav_server", n, slamPosPublisher);
 
         cout << endl << "ROS4RSB is RUNNING (:" << endl;
 

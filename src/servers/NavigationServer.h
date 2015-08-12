@@ -5,8 +5,7 @@
  *      Author: leon, pdressel, prenner
  */
 
-#ifndef NAVIGATIONSERVER_H_
-#define NAVIGATIONSERVER_H_
+#pragma once
 
 #include "ServerException.h"
 
@@ -14,7 +13,7 @@
 #include <boost/cstdint.hpp>
 #include "../publishers/SlamPosPublisher.h"
 #include "../actuators/VelocityCommander.h"
- #include <costmap_2d/costmap_2d_ros.h>
+#include <costmap_2d/costmap_2d_ros.h>
 
 #include <rsb/Factory.h>
 #include <rst/navigation/CommandResult.pb.h>
@@ -49,67 +48,52 @@
 
 namespace ros4rsb {
 
-    class NavigationServer {
-    public:
-        NavigationServer(
-                std::string name,
-                ros::NodeHandle node,
-                SlamPosPublisher *slamPosPublisher,
-                bool isLocalNavigation = false);
-        ~NavigationServer();
+class NavigationServer {
+public:
+    NavigationServer(std::string name, ros::NodeHandle node, SlamPosPublisher *slamPosPublisher);
+    ~NavigationServer();
 
-        actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>* getMoveBaseClient() {
-            return this->moveBaseClient;
-        }
-        void stop();
-        void trainTarget(boost::shared_ptr<std::string> target);
-        void defineTarget(boost::shared_ptr<rst::scene::SceneObject> target);
-        void deleteTarget(boost::shared_ptr<std::string> target);
-        boost::shared_ptr<rst::navigation::CommandResult> moveTo(boost::shared_ptr<rst::navigation::CoordinateCommand> corr, bool relative);
-        boost::shared_ptr<rst::navigation::CommandResult> navigateTo(boost::shared_ptr<rst::navigation::CoordinateCommand> corr, bool relative);
-        boost::shared_ptr<rst::navigation::Path> getPathTo(boost::shared_ptr<rst::navigation::CoordinateCommand> coor, bool relative);
-        boost::shared_ptr<rst::navigation::CommandResult> reconfigureNode(boost::shared_ptr<std::string> node, boost::shared_ptr<rst::generic::KeyValuePair> key);
-        boost::shared_ptr<int64_t> getCostGlobal(boost::shared_ptr<rst::navigation::CoordinateCommand> corr);
-        bool isLocalized();
-        boost::shared_ptr<rst::navigation::PlatformCapabilities> getCapabilities();
-
-
-
-    private:
-        bool stopping;
-        std::string name;
-        ros::NodeHandle node;
-        bool isLocalNavigation;
- 	bool isGoalActive;
-        double defaultTurnSpeed;
-        double defaultMoveSpeed;
-        ros::Time lastTime;
-        ros4rsb::Costmap* costmap;
-        SlamPosPublisher *slamPosPublisher;
-        VelocityCommander *velocityCommander;
-        rsb::patterns::LocalServerPtr server;
-        ros::ServiceClient clientGetPlan;
-        ros::ServiceClient drcclient_local_costmap;
-        ros::ServiceClient drcclient_global_costmap;
-        ros::ServiceClient drcclient_move_base;
-        ros::ServiceClient drcclient_trajectory_planner;
-        actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *moveBaseClient;
-        boost::shared_ptr<rst::navigation::CommandResult> reconfigureBool(boost::shared_ptr<std::string> nodeName, boost::shared_ptr<rst::generic::KeyValuePair> key);
-
-        /*
-	Old functions:  
-        void localCostmapConfigUpdateCallback(const dynamic_reconfigure::Config::ConstPtr& updated_config);
-        void globalCostmapConfigUpdateCallback(const dynamic_reconfigure::Config::ConstPtr& updated_config);
-        void moveBaseConfigUpdateCallback(const dynamic_reconfigure::Config::ConstPtr& updated_config);
-        void trajectoryPlannerConfigUpdateCallback(const dynamic_reconfigure::Config::ConstPtr& updated_config);
-        void drcSetLocalCostmap(const std::string &in, std::string &out);
-        void drcGetLocalCostmap(const std::string &in, std::string &out);
-        void drcSetGlobalCostmap(const std::string &in, std::string &out);
-        void drcGetGlobalCostmap(const std::string &in, std::string &out);
-        void drcSetMoveBase(const std::string &in, std::string &out);
-        void drcGetMoveBase(const std::string &in, std::string &out);
-        void drcSetTrajectoryPlanner(const std::string &in, std::string &out);
-	*/
-        };
+    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>* getMoveBaseClient() {
+        return this->moveBaseClient;
     }
-#endif /* NAVIGATIONSERVER_H_ */
+    void stop();
+    void trainTarget(boost::shared_ptr<std::string> target);
+    void defineTarget(boost::shared_ptr<rst::scene::SceneObject> target);
+    void deleteTarget(boost::shared_ptr<std::string> target);
+    boost::shared_ptr<rst::navigation::CommandResult> moveTo(
+            boost::shared_ptr<rst::navigation::CoordinateCommand> corr, bool relative);
+    boost::shared_ptr<rst::navigation::CommandResult> navigateTo(
+            boost::shared_ptr<rst::navigation::CoordinateCommand> corr, bool relative);
+    boost::shared_ptr<rst::navigation::Path> getPathTo(
+            boost::shared_ptr<rst::navigation::CoordinateCommand> coor, bool relative);
+    boost::shared_ptr<rst::navigation::CommandResult> reconfigureNode(
+            boost::shared_ptr<std::string> node, boost::shared_ptr<rst::generic::KeyValuePair> key);
+    boost::shared_ptr<int64_t> getCostGlobal(
+            boost::shared_ptr<rst::navigation::CoordinateCommand> corr);
+    bool isLocalized();
+    boost::shared_ptr<rst::navigation::PlatformCapabilities> getCapabilities();
+
+private:
+    bool stopping;
+    std::string name;
+    ros::NodeHandle node;
+    bool isGoalActive;
+    double defaultTurnSpeed;
+    double defaultMoveSpeed;
+    ros::Time lastTime;
+    ros4rsb::Costmap* costmap;
+    SlamPosPublisher *slamPosPublisher;
+    VelocityCommander *velocityCommander;
+    rsb::patterns::LocalServerPtr server;
+    ros::ServiceClient clientGetPlan;
+    ros::ServiceClient drcclient_local_costmap;
+    ros::ServiceClient drcclient_global_costmap;
+    ros::ServiceClient drcclient_move_base;
+    ros::ServiceClient drcclient_trajectory_planner;
+    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *moveBaseClient;
+    boost::shared_ptr<rst::navigation::CommandResult> reconfigureBool(
+            boost::shared_ptr<std::string> nodeName,
+            boost::shared_ptr<rst::generic::KeyValuePair> key);
+
+};
+}

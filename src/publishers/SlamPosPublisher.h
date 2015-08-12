@@ -29,7 +29,7 @@ namespace ros4rsb {
 class SlamPosPublisher: public Publisher<rst::geometry::Pose> {
 
 public:
-	SlamPosPublisher(std::string name, ros::NodeHandle node, bool isLocalNavigation);
+	SlamPosPublisher(std::string name, ros::NodeHandle node);
 	virtual ~SlamPosPublisher();
 	// TODO: Change the message this Publisher is listening to
 	void global_callback(const geometry_msgs::PoseWithCovarianceStampedConstPtr &message);

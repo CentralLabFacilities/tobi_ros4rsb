@@ -3,31 +3,14 @@ cmake_policy(SET CMP0005 NEW)
 cmake_policy(SET CMP0012 NEW)
 cmake_policy(SET CMP0003 NEW)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
 project(ros4rsb)
-
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-find_package(catkin REQUIRED COMPONENTS ${THIS_PACKAGE_ROS_DEPS})
-find_package(Boost REQUIRED COMPONENTS system signals)
-find_package(Eigen3 REQUIRED)
-
-include_directories(${EIGEN3_INCLUDE_DIR})
- MESSAGE(STATUS "Eigen: ${EIGEN3_INCLUDE_DIR}")
-
 
 find_package(catkin REQUIRED COMPONENTS message_generation 
                                         tf
                                         dynamic_reconfigure
+                                        costmap_2d
                                         actionlib
-                                        wave_detection
+                                        waving_detection
                                         std_msgs 
                                         geometry_msgs 
                                         sensor_msgs
@@ -40,8 +23,9 @@ find_package(catkin REQUIRED COMPONENTS message_generation
 catkin_package(CATKIN_DEPENDS message_runtime
                               tf
                               dynamic_reconfigure
+                              costmap_2d
                               actionlib
-                              wave_detection
+                              waving_detection
                               std_msgs
                               geometry_msgs
                               sensor_msgs
@@ -56,26 +40,15 @@ catkin_package(CATKIN_DEPENDS message_runtime
 include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
 
+find_package(Boost REQUIRED COMPONENTS system signals)
 
-
-## !!!!!! HACK !!!!!!
-## remove this as soon as the navigation stack is catkin-ized !!
-set(STACKS_DIR /opt/ros/indigo/stacks)
-set(NAV_STACK_DIR ${STACKS_DIR}/navigation)
-include_directories(${STACKS_DIR}/bullet/include/ /usr/include/bullet)
-include_directories(${NAV_STACK_DIR}/move_base_msgs/msg_gen/cpp/include/)
-include_directories(${NAV_STACK_DIR}/move_base/include/)
-include_directories(${NAV_STACK_DIR}/move_base/cfg/cpp/)
-include_directories(${NAV_STACK_DIR}/costmap_2d/cfg/cpp/)
-include_directories(${NAV_STACK_DIR}/base_local_planner/cfg/cpp/)
-link_directories(${NAV_STACK_DIR}/costmap_2d/lib)
-list(APPEND catkin_LIBRARIES costmap_2d)
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+MESSAGE(STATUS "Eigen: ${EIGEN3_INCLUDE_DIR}")
 
 # Try to find RSB and its components
 find_package(RSC QUIET REQUIRED)
 find_package(RSB QUIET REQUIRED)
-# FIX FOR RST 0.7
-#set(CONFIG_DIR ${RSC_CONFIG_DIR}/../rst)
 find_package(RST QUIET REQUIRED COMPONENTS sandbox)
 find_package(rst-converters QUIET REQUIRED)
 find_package(ProtocolBuffers QUIET REQUIRED)
@@ -103,19 +76,6 @@ IF(NOT PROTOBUF_PROTOC_EXECUTABLE)
     MESSAGE(FATAL_ERROR "protoc executable not found")
 ENDIF()
 
-# Protobuf Types
-SET(PROTOS 
-#           src/proto/Path.proto
-#           src/proto/LaserScan.proto
-)
-
-#PROTOBUF_GENERATE(CPP PROTO_SOURCES PROTO_HEADERS
-#                  EXPORT_MACRO RST_EXPORT
-#                  PROTOFILES ${PROTOS}
-#                  PROTOROOT "${CMAKE_CURRENT_SOURCE_DIR}" "${RST_STABLE_PROTO_ROOT}" "${RST_SANDBOX_PROTO_ROOT}"
-#                  OUTPATH ${CMAKE_CURRENT_BINARY_DIR}
-#                  )
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/src)
 
 set(SOURCES src/ros4rsb.cpp
@@ -133,7 +93,6 @@ set(SOURCES src/ros4rsb.cpp
             src/actuators/VelocityCommander.cpp
             src/servers/Costmap.cpp
             src/servers/NavigationServer.cpp
-            ${PROTO_SOURCES}
             )
 
 add_executable(ros4rsb ${SOURCES})

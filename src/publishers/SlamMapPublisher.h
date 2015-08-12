@@ -26,7 +26,7 @@ namespace ros4rsb {
 
     class SlamMapPublisher : public Publisher<rst::navigation::OccupancyGrid2DInt> {
     public:
-        SlamMapPublisher(std::string name, ros::NodeHandle node, bool isLocalNavigation);
+        SlamMapPublisher(std::string name, ros::NodeHandle node);
         virtual ~SlamMapPublisher();
         // TODO: Change the message this Publisher is listening to
         void callback(const nav_msgs::OccupancyGridConstPtr &message);
