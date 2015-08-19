@@ -10,9 +10,9 @@
 
 #include <rst/geometry/Pose.pb.h>
 #include "Publisher.h"
-#include "wave_detection/HandCreate.h"
-#include "wave_detection/HandUpdate.h"
-#include "wave_detection/HandDestroy.h"
+#include "waving_detection/HandCreate.h"
+#include "waving_detection/HandUpdate.h"
+#include "waving_detection/HandDestroy.h"
 #include <tf/transform_listener.h>
 
 #include <boost/enable_shared_from_this.hpp>
@@ -25,11 +25,11 @@ namespace ros4rsb {
     public:
        WaveDetectionPublisher(std::string name, ros::NodeHandle node);
 
-    void handCreateCallback(const wave_detection::HandCreateConstPtr& msg);
+    void handCreateCallback(const waving_detection::HandCreateConstPtr& msg);
     
-    void handUpdateCallback(const wave_detection::HandUpdateConstPtr& msg);
+    void handUpdateCallback(const waving_detection::HandUpdateConstPtr& msg);
     
-    void handDestroyCallback(const wave_detection::HandDestroyConstPtr& msg);
+    void handDestroyCallback(const waving_detection::HandDestroyConstPtr& msg);
     
 private:
     ros::Subscriber handCreateSub;
