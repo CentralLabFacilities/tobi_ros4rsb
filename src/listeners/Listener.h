@@ -20,7 +20,7 @@ public:
 
 	Listener(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle node) :
 		factory(rsb::getFactory()) {
-		this->scope = scope;
+		this->scope = scopeIn;
 		this->node = node;
 		this->rosPublisher = node.advertise<RosType>(topicOut, 10);
 
