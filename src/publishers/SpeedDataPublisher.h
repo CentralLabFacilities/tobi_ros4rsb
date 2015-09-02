@@ -5,8 +5,7 @@
  * Created on April 25, 2014, 1:02 PM
  */
 
-#ifndef SPEEDDATAPUBLISHER_H
-#define	SPEEDDATAPUBLISHER_H
+#pragma once
 
 #include "Publisher.h"
 
@@ -21,12 +20,13 @@
 
 namespace ros4rsb {
 
-    class SpeedDataPublisher : public Publisher<rst::kinematics::Twist> {
+    class SpeedDataPublisher : public PublisherImpl<rst::kinematics::Twist> {
     public:
-        SpeedDataPublisher(std::string name, ros::NodeHandle node);
+        SpeedDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node);
         virtual ~SpeedDataPublisher();
         void callback(const nav_msgs::Odometry::ConstPtr &message);
-    };
-}
-#endif	/* SPEEDDATAPUBLISHER_H */
 
+        CREATE_PUBLISHER_BUILDER_NESTED(SpeedDataPublisher)
+    };
+
+}

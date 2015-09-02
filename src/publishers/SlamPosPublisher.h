@@ -5,9 +5,7 @@
  *      Author: leon
  */
 
-#ifndef SLAMPOS_H_
-#define SLAMPOS_H_
-
+#pragma once
 #include "Publisher.h"
 
 // ROS
@@ -26,30 +24,29 @@
 
 namespace ros4rsb {
 
-class SlamPosPublisher: public Publisher<rst::geometry::Pose> {
-
+class SlamPosPublisher: public PublisherImpl<rst::geometry::Pose> {
 public:
-	SlamPosPublisher(std::string name, ros::NodeHandle node);
+	SlamPosPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node);
 	virtual ~SlamPosPublisher();
 	// TODO: Change the message this Publisher is listening to
 	void global_callback(const geometry_msgs::PoseWithCovarianceStampedConstPtr &message);
-        void local_callback(const nav_msgs::Odometry::ConstPtr &message);
+    void local_callback(const nav_msgs::Odometry::ConstPtr &message);
 	void publishThread();
         geometry_msgs::Pose getPose();
 
+    CREATE_PUBLISHER_BUILDER_NESTED(SlamPosPublisher)
+
 private:
-        void convertPoseToPositionData(
-                const geometry_msgs::Pose &pose, 
-                boost::shared_ptr<rst::geometry::Pose> positionData);
+    void convertPoseToPositionData(const geometry_msgs::Pose &pose,
+            boost::shared_ptr<rst::geometry::Pose> positionData);
     
 	boost::mutex mutex;
 	boost::thread runner;
-        tf::TransformListener *tfListener;
-        geometry_msgs::Pose pose;
+    tf::TransformListener *tfListener;
+    geometry_msgs::Pose pose;
 	boost::shared_ptr<rst::geometry::Pose> positionData;
 	uint64_t timestamp;
 	bool hasData;
 };
 
 } /* namespace ros4rsb */
-#endif /* SLAMPOS_H_ */

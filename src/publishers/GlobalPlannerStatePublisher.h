@@ -5,8 +5,7 @@
  * Created on April 25, 2014, 10:40 AM
  */
 
-#ifndef GLOBALPLANNERSTATEPUBLISHER_H
-#define	GLOBALPLANNERSTATEPUBLISHER_H
+#pragma once
 
 #include "Publisher.h"
 
@@ -22,18 +21,18 @@
 
 namespace ros4rsb {
 
-    class GlobalPlannerStatePublisher : public Publisher<std::string> {
+    class GlobalPlannerStatePublisher : public PublisherImpl<std::string> {
         
     public:
-        GlobalPlannerStatePublisher(
-                std::string name,
-                ros::NodeHandle node);
+        GlobalPlannerStatePublisher(const std::string &topicIn,
+                const std::string &name,
+                ros::NodeHandle &node);
         virtual ~GlobalPlannerStatePublisher();
 
         void setActiveGoal(actionlib_msgs::GoalID goalID);
         void publishPlannerState();
 
-
+        CREATE_PUBLISHER_BUILDER_NESTED(GlobalPlannerStatePublisher)
 
     private:
         void callback(const actionlib_msgs::GoalStatusArrayConstPtr &message);
@@ -43,7 +42,3 @@ namespace ros4rsb {
     };
     
 }
-
-
-#endif	/* GLOBALPLANNERSTATEPUBLISHER_H */
-

@@ -16,8 +16,8 @@ using namespace rst;
 
 namespace ros4rsb {
 
-GlobalPlanPublisher::GlobalPlanPublisher(string name, NodeHandle node) :
-	Publisher(name, node) {
+GlobalPlanPublisher::GlobalPlanPublisher(const string &topicIn,string name, NodeHandle node) :
+        PublisherImpl(name, node) {
 
 	function<void(const nav_msgs::PathConstPtr&)> m0 = bind(
 			mem_fn(&GlobalPlanPublisher::callback), this, _1);
@@ -25,10 +25,8 @@ GlobalPlanPublisher::GlobalPlanPublisher(string name, NodeHandle node) :
 	tfListener = new tf::TransformListener(node);
 
 	rosSubscriber = node.subscribe(
-			"/move_base/NavfnROS/plan", 1000, m0);
-	cout << name
-			<< " GlobalPlanPublisher is subscribing to /move_base/NavfnROS/plan."
-			<< endl;
+			topicIn, 1000, m0);
+	ROS_INFO_STREAM("GlobalPlanPublisher: " << name << " is subscribing to topic " << topicIn);
 }
 
 GlobalPlanPublisher::~GlobalPlanPublisher() {

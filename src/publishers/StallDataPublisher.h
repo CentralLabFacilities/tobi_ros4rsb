@@ -5,11 +5,9 @@
  * Created on April 25, 2014, 1:43 PM
  */
 
-#ifndef STALLDATAPUBLISHER_H
-#define	STALLDATAPUBLISHER_H
+#pragma once
 
 #define SKIPCONVERTER
-
 #include "Publisher.h"
 
 // ROS
@@ -22,14 +20,12 @@
 
 namespace ros4rsb {
 
-    class StallDataPublisher : public Publisher<void>{
+    class StallDataPublisher : public PublisherImpl<void>{
     public:
-	StallDataPublisher(std::string name, ros::NodeHandle node);
-	virtual ~StallDataPublisher();
+        StallDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node);
+        virtual ~StallDataPublisher();
         void callback(const diagnostic_msgs::DiagnosticArray::ConstPtr &message);
+
+        CREATE_PUBLISHER_BUILDER_NESTED(StallDataPublisher)
     };
-
 }
-
-#endif	/* STALLDATAPUBLISHER_H */
-

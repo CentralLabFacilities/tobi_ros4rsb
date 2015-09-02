@@ -18,16 +18,17 @@
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.886914258.1350736120" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.base.367660039" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.1052222729" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-							<builder id="cdt.managedbuild.target.gnu.builder.base.314123904" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<builder buildPath="${workspace_loc:/tobi_ros4rsb}/build" id="cdt.managedbuild.target.gnu.builder.base.314123904" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.2115786536" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.71788500" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.195761708" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/opt/ros/indigo/include"/>
-									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rsb0.11"/>
-									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rsc0.11"/>
-									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rst0.11/sandbox"/>
-									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rst0.11/stable"/>
 									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/eigen3"/>
+									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rsb0.12"/>
+									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rsc0.12"/>
+									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rst0.12/sandbox"/>
+									<listOptionValue builtIn="false" value="/vol/robocup/nightly/include/rst0.12/stable"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2084841843" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -67,5 +68,10 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.886914258;cdt.managedbuild.toolchain.gnu.base.886914258.1350736120;cdt.managedbuild.tool.gnu.cpp.compiler.base.71788500;cdt.managedbuild.tool.gnu.cpp.compiler.input.2084841843">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/tobi_ros4rsb"/>
+		</configuration>
 	</storageModule>
 </cproject>

@@ -14,21 +14,17 @@ using namespace rst;
 
 namespace ros4rsb {
 
-LaserDataPublisher::LaserDataPublisher(string name, ros::NodeHandle node,
-		bool isInterleavedMode) :
-		Publisher(name, node), isInterleavedMode(isInterleavedMode), dataAvailable(
-				false) {
+LaserDataPublisher::LaserDataPublisher(const string &topicIn,string name, ros::NodeHandle node) :
+		PublisherImpl(name, node), dataAvailable(false) {
+
+    node.param<bool>("/isInterleavedLaserData", isInterleavedMode, true);
 
 	function<void(const sensor_msgs::LaserScan::ConstPtr&)> m0 = bind(
 			mem_fn(&LaserDataPublisher::callback), this, _1);
-        std::string laserTopic;
-        ros::NodeHandle nh;
-        nh.param<std::string>("laser_topic", laserTopic, "/scan");
 
-	rosSubscriber = node.subscribe(laserTopic, 1000, m0);
-	std::cout << name << " subscribed to " << laserTopic << " topic." << std::endl;
-	std::cout << name << ": Interleaved mode: " << isInterleavedMode
-			<< std::endl;
+	rosSubscriber = node.subscribe(topicIn, 1000, m0);
+	ROS_INFO_STREAM("LaserDataPublisher: " << name << " is subscribing to topic " << topicIn);
+	ROS_INFO_STREAM("LaserDataPublisher: Interleaved mode: " << isInterleavedMode);
 }
 
 LaserDataPublisher::~LaserDataPublisher() {

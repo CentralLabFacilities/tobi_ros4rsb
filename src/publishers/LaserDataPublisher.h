@@ -4,8 +4,7 @@
  *
  * Created on March 13, 2012, 2:54 PM
  */
-#ifndef LASERDATAPUBLISHER_H
-#define LASERDATAPUBLISHER_H
+#pragma once
 
 #include "Publisher.h"
 
@@ -27,7 +26,7 @@ namespace ros4rsb {
  *
  * @author prenner, pdressel, lziegler
  */
-class LaserDataPublisher: public Publisher<rst::vision::LaserScan> {
+class LaserDataPublisher: public PublisherImpl<rst::vision::LaserScan> {
 public:
 	/**
 	 * Creates a new instance of this class.
@@ -37,8 +36,7 @@ public:
 	 * @param isInterleavedMode Does the laser data come in as separate
 	 * 			interleaved messages?
 	 */
-	LaserDataPublisher(std::string name, ros::NodeHandle node,
-			bool isInterleavedMode = true);
+	LaserDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node);
 	virtual ~LaserDataPublisher();
         
 	/**
@@ -48,6 +46,8 @@ public:
 	 * @param message The new incoming message.
 	 */
 	void callback(const sensor_msgs::LaserScan::ConstPtr &message);
+
+	CREATE_PUBLISHER_BUILDER_NESTED(LaserDataPublisher)
 private:
 
 	/**
@@ -69,5 +69,3 @@ private:
 };
 
 }
-
-#endif	/* LASERDATAPUBLISHER_H */

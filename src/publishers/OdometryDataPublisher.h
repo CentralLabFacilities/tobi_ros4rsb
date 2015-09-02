@@ -5,8 +5,7 @@
  * Created on April 25, 2014, 11:01 AM
  */
 
-#ifndef ODOMETRYDATAPUBLISHER_H
-#define	ODOMETRYDATAPUBLISHER_H
+#pragma once
 
 #include "Publisher.h"
 
@@ -24,12 +23,12 @@
 
 namespace ros4rsb {
 
-    class OdometryDataPublisher : public Publisher<rst::geometry::Pose> {
+    class OdometryDataPublisher : public PublisherImpl<rst::geometry::Pose> {
     public:
-        OdometryDataPublisher(std::string name, ros::NodeHandle node);
+        OdometryDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node);
         virtual ~OdometryDataPublisher();
         void callback(const nav_msgs::Odometry::ConstPtr &message);
+
+        CREATE_PUBLISHER_BUILDER_NESTED(OdometryDataPublisher)
     };
 }
-#endif	/* ODOMETRYDATAPUBLISHER_H */
-

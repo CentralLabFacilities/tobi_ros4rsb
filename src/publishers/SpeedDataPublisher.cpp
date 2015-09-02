@@ -15,16 +15,14 @@ using namespace rst;
 
 namespace ros4rsb {
 
-    SpeedDataPublisher::SpeedDataPublisher(string name, NodeHandle node) :
-    Publisher(name, node) {
+    SpeedDataPublisher::SpeedDataPublisher(const string &topicIn,string name, NodeHandle node) :
+        PublisherImpl(name, node) {
 
         function<void(const nav_msgs::Odometry::ConstPtr&) > m0 = bind(
                 mem_fn(&SpeedDataPublisher::callback), this, _1);
 
-        rosSubscriber = node.subscribe("odom", 1000, m0);
-        std::cout << name << " subscribed to odom topic." << std::endl;
-
-
+        rosSubscriber = node.subscribe(topicIn, 1000, m0);
+        ROS_INFO_STREAM("SpeedDataPublisher: " << name << " is subscribing to topic " << topicIn);
     }
 
     SpeedDataPublisher::~SpeedDataPublisher() {

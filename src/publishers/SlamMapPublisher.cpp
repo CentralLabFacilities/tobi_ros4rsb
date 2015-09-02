@@ -18,22 +18,17 @@ using namespace rst;
 
 namespace ros4rsb {
 
-    SlamMapPublisher::SlamMapPublisher(
-            string name,
-            NodeHandle node) :
-    Publisher(name, node),
+    SlamMapPublisher::SlamMapPublisher(const string &topicIn,const string &name, ros::NodeHandle &node) :
+        PublisherImpl(name, node),
     hasData(false) {
-
-        string topic = "map";
 
         function<void(const nav_msgs::OccupancyGrid::ConstPtr&) > m0 = bind(
                 mem_fn(&SlamMapPublisher::callback), this, _1);
 
-        rosSubscriber = node.subscribe(topic, 1000, m0);
-        std::cout << name << " subscribed to topic: " << topic << std::endl;
+        rosSubscriber = node.subscribe(topicIn, 1000, m0);
+        ROS_INFO_STREAM("SlamMapPublisher: " << name << " is subscribing to topic " << topicIn);
 
         runner = boost::thread(&SlamMapPublisher::publishThread, this);
-        //        xcfPublisher->setOnlySendLast();
 
     }
 

@@ -12,7 +12,7 @@ VelocityCommander::VelocityCommander(std::string name, ros::NodeHandle node) {
     this->node = node;
     this->publisher = node.advertise<geometry_msgs::Twist>("cmd_vel", 1);
     this->running = false;
-    std::cout << name << " publishing to /cmd_vel." << std::endl;
+    ROS_INFO("VelocityCommander: publishing to /cmd_vel.");
 }
 
 void VelocityCommander::stop() {

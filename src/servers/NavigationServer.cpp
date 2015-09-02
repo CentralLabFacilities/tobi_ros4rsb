@@ -4,13 +4,14 @@
  *  Created on: 18.03.2012 
  *      Author: leon, pdressel, prenner, cklarhor (rewrite on 25.04.14)
  * 
- *  SOMEONE SHOULD UPDATE THIS FILE TO USE LOGGING INSTEAD OF PRINTF
  */
 #include "NavigationServer.h"
 #include <tf2/LinearMath/Scalar.h>
 #include <tf2/LinearMath/Quaternion.h> 
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <Eigen/Geometry>
+#include <rsb/converter/Repository.h>
+#include <rsb/converter/ProtocolBufferConverter.h>
 
 #define WAYPOINTS_PER_MESSAGE 10
 
@@ -47,9 +48,9 @@ public:
         this->server = server;
     }
     void call(const std::string&) {
-        printf("call BlockingCallback\n");
+        ROS_INFO("call BlockingCallback\n");
         usleep(100000000);
-        printf("finish BlockingCallback\n");
+        ROS_INFO("finish BlockingCallback\n");
     }
 };
 
@@ -142,11 +143,10 @@ public:
     }
 };
 
-NavigationServer::NavigationServer(std::string name, ros::NodeHandle node,
-        SlamPosPublisher* slamPosPublisher) {
+NavigationServer::NavigationServer(const std::string &name, ros::NodeHandle &node) {
     this->name = name;
     this->node = node;
-    this->slamPosPublisher = slamPosPublisher;
+    this->tfListener = new tf::TransformListener(node);
     this->velocityCommander = new VelocityCommander("VelocityCommander", node);
     this->defaultMoveSpeed = 0.5;
     this->defaultTurnSpeed = 0.5;
@@ -158,10 +158,15 @@ NavigationServer::NavigationServer(std::string name, ros::NodeHandle node,
     //tell the action client that we want to spin a thread by default
     moveBaseClient = new SimpleActionClient<MoveBaseAction>(node, "move_base", true);
 
+    function<void(const nav_msgs::Odometry::ConstPtr&)> m1 = bind(
+            mem_fn(&NavigationServer::poseCallback), this, _1);
+    rosSubscriber = node.subscribe("pose", 1000, m1);
+
     //wait for the action server to come up
-    while (!moveBaseClient->waitForServer(ros::Duration(5.0))) {
-        ROS_INFO("Waiting for the move_base action server to come up");
-        sleep(1);
+    ROS_INFO("waiting for move_base action server...");
+    if (!moveBaseClient->waitForServer(ros::Duration(10.0))) {
+        ROS_FATAL("move_base action server is not present!");
+        throw ros::Exception("move_base action server is not present!");
     }
     ROS_INFO("move_base action server ready\n");
     costmap = new Costmap("/move_base/local_costmap", node);
@@ -198,7 +203,7 @@ NavigationServer::NavigationServer(std::string name, ros::NodeHandle node,
 
     server = factory.createLocalServer(this->name, config); // config);
 
-    cout << "Server name: " << name << std::endl;
+    ROS_INFO_STREAM("Server name: " << name);
     server->registerMethod("stop", LocalServer::CallbackPtr(new StopCb(this)));
     server->registerMethod("blocking", LocalServer::CallbackPtr(new BlockingCb(this)));
     server->registerMethod("moveRelative", LocalServer::CallbackPtr(new MoveRelativeCb(this)));
@@ -211,6 +216,23 @@ NavigationServer::NavigationServer(std::string name, ros::NodeHandle node,
     server->registerMethod("getCostGlobal", LocalServer::CallbackPtr(new GetCostCb(this)));
     ROS_INFO("registered all methods\n");
 
+}
+
+void NavigationServer::poseCallback(
+        const nav_msgs::Odometry::ConstPtr &message) {
+
+    boost::mutex::scoped_lock lock(poseMutex);
+
+    geometry_msgs::PoseStamped poseOut;
+    geometry_msgs::PoseStamped poseIn;
+    poseIn.pose = message->pose.pose;
+    poseIn.header.frame_id = "/odom";
+    try {
+        tfListener->transformPose("/map", poseIn, poseOut);
+        this->currentPose = poseOut.pose;
+    } catch (tf::TransformException &e) {
+        ROS_ERROR("No transform!");
+    }
 }
 
 void NavigationServer::stop() {
@@ -243,8 +265,8 @@ shared_ptr<CommandResult> NavigationServer::navigateTo(shared_ptr<CoordinateComm
         mbGoal.target_pose.header.frame_id = "base_link";
     else
         mbGoal.target_pose.header.frame_id = "map";
-    cout << "Driving to x:" << coor->mutable_goal()->mutable_translation()->x() << ",y: "
-            << coor->mutable_goal()->mutable_translation()->y() << "relative: " << relative;
+    ROS_INFO_STREAM("Driving to x:" << coor->mutable_goal()->mutable_translation()->x() << ",y: "
+            << coor->mutable_goal()->mutable_translation()->y() << "relative: " << relative);
     mbGoal.target_pose.pose.position.x = coor->mutable_goal()->mutable_translation()->x();
     mbGoal.target_pose.pose.position.y = coor->mutable_goal()->mutable_translation()->y();
     mbGoal.target_pose.pose.orientation.x = coor->mutable_goal()->mutable_rotation()->qx();
@@ -287,10 +309,10 @@ shared_ptr<CommandResult> NavigationServer::navigateTo(shared_ptr<CoordinateComm
 
 shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand> coor,
         bool relative) {
-    printf("call move\n");
+    ROS_INFO("call move\n");
     stop();
     if (!relative) {
-        printf("fail not impl");
+        ROS_INFO("fail not impl");
         shared_ptr<CommandResult> result(new CommandResult());
         result->set_type(CommandResult_Result_CUSTOM_ERROR);
         result->set_description("not impl");
@@ -315,17 +337,17 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
     tfScalar roll, pitch, yaw;
     tf::Quaternion q = tf::Quaternion(r.qx(), r.qy(), r.qz(), r.qw());
     tf::Matrix3x3(q).getEulerYPR(yaw, pitch, roll);
-    std::cout << "yaw: " << yaw << ",pitch: " << pitch << ",roll: " << roll;
+    ROS_INFO_STREAM("yaw: " << yaw << ",pitch: " << pitch << ",roll: " << roll);
     //our angle is pitch its around y axis
-    printf("before turn\n");
+    ROS_INFO("before turn\n");
     ExitStatus status = this->velocityCommander->turn(yaw, v_theta);
-    printf("after turn\n");
-    printf("before drive\n");
+    ROS_INFO("after turn\n");
+    ROS_INFO("before drive\n");
     if (status == SUCCESS) {
         status = this->velocityCommander->drive(coor->mutable_goal()->mutable_translation()->x(),
                 v_x);
     }
-    printf("after drive\n");
+    ROS_INFO("after drive\n");
     shared_ptr<CommandResult> result(new CommandResult());
     switch (status) {
     case CANCELLED:
@@ -357,8 +379,11 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
 shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor, bool relative) {
     ROS_INFO("call getPathTo\n");
     nav_msgs::GetPlan srv;
-    srv.request.start.pose = slamPosPublisher->getPose();
-    cout << "start pose: " << srv.request.start.pose << endl;
+    {
+        boost::mutex::scoped_lock lock(poseMutex);
+        srv.request.start.pose = currentPose;
+    }
+    ROS_INFO_STREAM("start pose: " << srv.request.start.pose);
     if (relative)
         srv.request.goal.header.frame_id = "base_link";
     else
@@ -371,18 +396,17 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
     srv.request.goal.pose.orientation.z = coor->mutable_goal()->mutable_rotation()->qz();
     srv.request.goal.pose.orientation.w = coor->mutable_goal()->mutable_rotation()->qw();
     srv.request.tolerance = coor->mutable_motion_parameters()->translation_accuracy();
-    std::cout << "search for plan with tol: " << srv.request.tolerance << ", x:"
-            << srv.request.goal.pose.position.x << ",y=" << srv.request.goal.pose.position.y
-            << std::endl;
+    ROS_INFO_STREAM("search for plan with tol: " << srv.request.tolerance << ", x:"
+            << srv.request.goal.pose.position.x << ",y=" << srv.request.goal.pose.position.y);
     shared_ptr<Path> path(new Path());
-    std::cout << "calling getPlan..." << std::endl;
+    ROS_INFO("calling getPlan...");
     if (clientGetPlan.call(srv)) {
         // skip some points for efficiency
         unsigned int step = ceil(srv.response.plan.poses.size() / WAYPOINTS_PER_MESSAGE);
         if (step == 0)
             ++step;
         for (unsigned int i = 0; i < srv.response.plan.poses.size(); i += step) {
-            std::cout << "loop " << i << std::endl;
+            ROS_INFO_STREAM("loop " << i);
             geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
             rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
             waypoint->mutable_translation()->set_x(pose.position.x);
@@ -393,9 +417,9 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
             waypoint->mutable_rotation()->set_qy(pose.orientation.y);
             waypoint->mutable_rotation()->set_qz(pose.orientation.z);
         }
-        std::cout << "got plan..." << std::endl;
+        ROS_INFO_STREAM("got plan...");
     } else {
-        std::cout << "no plan..." << std::endl;
+        ROS_INFO_STREAM("no plan...");
     }
     return path;
     ROS_INFO("called getPathTo\n");
@@ -407,13 +431,13 @@ shared_ptr<int64_t> NavigationServer::getCostGlobal(shared_ptr<CoordinateCommand
     unsigned int mapY;
     if (!costmap->costmap->worldToMap(coor->mutable_goal()->mutable_translation()->x(),
             coor->mutable_goal()->mutable_translation()->y(), mapX, mapY)) {
-        std::cout << "Error: request get cost for out of costmap coord!!! -> return no costs (X: "
-                << mapX << ",Y:" << mapY;
+        ROS_INFO_STREAM("Error: request get cost for out of costmap coord!!! -> return no costs (X: "
+                << mapX << ",Y:" << mapY);
         shared_ptr<int64_t> costPtr(new int64_t((int64_t) 0));
         return costPtr;
     }
     unsigned char cost = costmap->costmap->getCost(mapX, mapY);
-    std::cout << "cell coor: X:" << mapX << ", Y: " << mapY << ", cost:" << cost;
+    ROS_INFO_STREAM("cell coor: X:" << mapX << ", Y: " << mapY << ", cost:" << cost);
     shared_ptr<int64_t> costPtr(new int64_t((int64_t) cost));
     ROS_INFO("called getCostGlobal\n");
     return costPtr;
@@ -426,7 +450,7 @@ NavigationServer::~NavigationServer() {
 
 shared_ptr<CommandResult> NavigationServer::reconfigureNode(shared_ptr<string> node,
         shared_ptr<KeyValuePair> key) {
-    std::cout << "call reconfigureNode with node=" << node << " key=" << key << std::endl;
+    ROS_INFO_STREAM("call reconfigureNode with node=" << node << " key=" << key);
 
     switch (key->mutable_value()->type()) {
     case Value_Type_BOOL:

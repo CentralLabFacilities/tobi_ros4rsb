@@ -17,14 +17,14 @@ using namespace rst;
 
 namespace ros4rsb {
 
-    OdometryDataPublisher::OdometryDataPublisher(std::string name, ros::NodeHandle node) :
-    Publisher(name, node) {
+    OdometryDataPublisher::OdometryDataPublisher(const string &topicIn,std::string name, ros::NodeHandle node) :
+        PublisherImpl(name, node) {
 
         function<void(const nav_msgs::Odometry::ConstPtr&) > m0 = bind(
                 mem_fn(&OdometryDataPublisher::callback), this, _1);
 
-        rosSubscriber = node.subscribe("odom", 1000, m0);
-        std::cout << name << " subscribed to odom topic." << std::endl;
+        rosSubscriber = node.subscribe(topicIn, 1000, m0);
+        ROS_INFO_STREAM("OdometryDataPublisher: " << name << " is subscribing to topic " << topicIn);
     }
 
     OdometryDataPublisher::~OdometryDataPublisher() {

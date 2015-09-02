@@ -5,8 +5,7 @@
  * Created on March 29, 2012, 9:38 AM
  */
 
-#ifndef GLOBALPLANPUBLISHER_H
-#define	GLOBALPLANPUBLISHER_H
+#pragma once
 
 #include "Publisher.h"
 
@@ -28,7 +27,7 @@ namespace ros4rsb {
  *
  * @author prenner, pdressel, lziegler
  */
-class GlobalPlanPublisher: public Publisher<rst::navigation::Path> {
+class GlobalPlanPublisher: public PublisherImpl<rst::navigation::Path> {
 public:
 	/**
 	 * Creates a new instance of this class.
@@ -38,7 +37,7 @@ public:
 	 * @param isInterleavedMode Does the laser data come in as separate
 	 * 			interleaved messages?
 	 */
-	GlobalPlanPublisher(std::string name, ros::NodeHandle node);
+	GlobalPlanPublisher(const std::string &topicIn, std::string name, ros::NodeHandle node);
 	virtual ~GlobalPlanPublisher();
         
 	/**
@@ -49,6 +48,7 @@ public:
 	 */
 	void callback(const nav_msgs::PathConstPtr &message);
         
+	CREATE_PUBLISHER_BUILDER_NESTED(GlobalPlanPublisher)
 private:
     tf::TransformListener *tfListener;
 	uint64_t timestamp;
@@ -56,6 +56,3 @@ private:
 };
 
 }
-
-#endif	/* GLOBALPLANPUBLISHER_H */
-

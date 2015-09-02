@@ -17,14 +17,14 @@ using namespace boost;
 
 namespace ros4rsb {
     
-    StallDataPublisher::StallDataPublisher(string name, NodeHandle node) :
-    Publisher(name, node) {
+    StallDataPublisher::StallDataPublisher(const string &topicIn,string name, NodeHandle node) :
+        PublisherImpl(name, node) {
 
         function<void(const diagnostic_msgs::DiagnosticArray::ConstPtr&) > m0 = bind(
                 mem_fn(&StallDataPublisher::callback), this, _1);
 
-        rosSubscriber = node.subscribe("diagnostics", 1000, m0);
-        cout << name << " subscribed to diagnostics topic." << endl;
+        rosSubscriber = node.subscribe(topicIn, 1000, m0);
+        ROS_INFO_STREAM("SpeedDataPublisher: " << name << " is subscribing to topic " << topicIn);
     }
 
     StallDataPublisher::~StallDataPublisher() {

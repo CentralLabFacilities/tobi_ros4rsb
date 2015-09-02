@@ -1,7 +1,6 @@
 #pragma once
 
 #define BOOST_SIGNALS_NO_DEPRECATION_WARNING
-#include <ros/ros.h>
 #include <rsb/Listener.h>
 #include <rsb/Factory.h>
 #include <string>
@@ -9,20 +8,28 @@
 #include <rsb/converter/Repository.h>
 #include <rsb/converter/ProtocolBufferConverter.h>
 
+#include <ros/ros.h>
+
 /**
  * This is a abstract class defining the outline of every Publisher that wraps ROS topics to RST types.
  */
 namespace ros4rsb {
 
-template<class RsbType, class RosType>
 class Listener {
 public:
+    typedef boost::shared_ptr<Listener> Ptr;
+    virtual ~Listener() {
+    }
+private:
+};
 
-	Listener(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle node) :
+template<class RsbType>
+class ListenerImpl: public Listener {
+public:
+
+    ListenerImpl(const std::string &scopeIn) :
 		factory(rsb::getFactory()) {
 		this->scope = scopeIn;
-		this->node = node;
-		this->rosPublisher = node.advertise<RosType>(topicOut, 10);
 
 #ifndef SKIPCONVERTER
 		try {
@@ -37,27 +44,47 @@ public:
 #endif
 
 		rsbListener = factory.createListener(scope);
-		boost::function<void(boost::shared_ptr<RsbType>)> cb(boost::bind(&Listener::callback, this, _1));
+		boost::function<void(boost::shared_ptr<RsbType>)> cb(boost::bind(&ListenerImpl::callback, this, _1));
 		rsbListener->addHandler(rsb::HandlerPtr(new rsb::DataFunctionHandler<RsbType>(cb)));
 	}
 
-	virtual ~Listener() {
-		rosPublisher.shutdown();
+	virtual ~ListenerImpl() {
 	}
 
 	virtual void callback(boost::shared_ptr<RsbType> data) = 0;
-	virtual void publish(const RosType &data) {
-		rosPublisher.publish(data);
-	}
 
 private:
 	std::string scope;
-	ros::NodeHandle node;
 
 protected:
-	ros::Publisher rosPublisher;
 	rsb::Factory& factory;
 	typename rsb::ListenerPtr rsbListener;
+};
+
+class ListenerBuilder {
+public:
+    typedef boost::shared_ptr<ListenerBuilder> Ptr;
+    ListenerBuilder(const std::string &listenerName): listenerName(listenerName) {
+    }
+    virtual std::string getListenerName() const {
+        return listenerName;
+    }
+    virtual Listener::Ptr build(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle &node) const = 0;
+    virtual ~ListenerBuilder() {
+    }
+protected:
+    std::string listenerName;
+};
+
+#define CREATE_LISTENER_BUILDER_NESTED(LISTENER_NAME) class Builder: public ListenerBuilder {\
+public:\
+    Builder(const std::string &listenerName) :\
+            ListenerBuilder(listenerName) {\
+    }\
+    virtual Listener::Ptr build(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle &node) const {\
+        ROS_INFO_STREAM("Building listener " << listenerName << ", topic: " << topicOut << ", scope: " << scopeIn);\
+        return Listener::Ptr(new LISTENER_NAME(scopeIn, topicOut, node));\
+    }\
 };
 
 }

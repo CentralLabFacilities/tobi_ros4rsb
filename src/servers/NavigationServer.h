@@ -11,7 +11,6 @@
 
 #include <vector>
 #include <boost/cstdint.hpp>
-#include "../publishers/SlamPosPublisher.h"
 #include "../actuators/VelocityCommander.h"
 #include <costmap_2d/costmap_2d_ros.h>
 
@@ -29,6 +28,7 @@
 // Ros
 #include <ros/ros.h>
 #include <nav_msgs/GetPlan.h>
+#include <nav_msgs/Odometry.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <geometry_msgs/Pose.h>
 #include <actionlib/client/simple_action_client.h>
@@ -45,12 +45,13 @@
 #include <boost/thread/mutex.hpp>
 
 #include "Costmap.h"
+#include "Server.h"
 
 namespace ros4rsb {
 
-class NavigationServer {
+class NavigationServer: public Server {
 public:
-    NavigationServer(std::string name, ros::NodeHandle node, SlamPosPublisher *slamPosPublisher);
+    NavigationServer(const std::string &name, ros::NodeHandle &node);
     ~NavigationServer();
 
     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>* getMoveBaseClient() {
@@ -73,6 +74,10 @@ public:
     bool isLocalized();
     boost::shared_ptr<rst::navigation::PlatformCapabilities> getCapabilities();
 
+    void poseCallback(const nav_msgs::Odometry::ConstPtr &message);
+
+    CREATE_SERVER_BUILDER_NESTED(NavigationServer)
+
 private:
     bool stopping;
     std::string name;
@@ -81,10 +86,11 @@ private:
     double defaultTurnSpeed;
     double defaultMoveSpeed;
     ros::Time lastTime;
+    tf::TransformListener *tfListener;
     ros4rsb::Costmap* costmap;
-    SlamPosPublisher *slamPosPublisher;
     VelocityCommander *velocityCommander;
     rsb::patterns::LocalServerPtr server;
+    ros::Subscriber rosSubscriber;
     ros::ServiceClient clientGetPlan;
     ros::ServiceClient drcclient_local_costmap;
     ros::ServiceClient drcclient_global_costmap;
@@ -92,8 +98,11 @@ private:
     ros::ServiceClient drcclient_trajectory_planner;
     actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *moveBaseClient;
     boost::shared_ptr<rst::navigation::CommandResult> reconfigureBool(
-            boost::shared_ptr<std::string> nodeName,
-            boost::shared_ptr<rst::generic::KeyValuePair> key);
+    boost::shared_ptr<std::string> nodeName,
+    boost::shared_ptr<rst::generic::KeyValuePair> key);
+
+    geometry_msgs::Pose currentPose;
+    boost::mutex poseMutex;
 
 };
 }

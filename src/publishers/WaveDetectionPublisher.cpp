@@ -13,7 +13,7 @@ using namespace boost;
 
 namespace ros4rsb {
 
-    WaveDetectionPublisher::WaveDetectionPublisher(std::string name, ros::NodeHandle node) : Publisher(name, node) {
+    WaveDetectionPublisher::WaveDetectionPublisher(const std::string &topicIn,const std::string &name, ros::NodeHandle &node) : PublisherImpl(name, node) {
         boost::function<void(const waving_detection::HandCreateConstPtr&) > m0 =
                 bind(mem_fn(&WaveDetectionPublisher::handCreateCallback), this, _1);
         handCreateSub = node.subscribe("HandCreate", 1000, m0);
@@ -24,7 +24,8 @@ namespace ros4rsb {
                 bind(mem_fn(&WaveDetectionPublisher::handUpdateCallback), this, _1);
         handUpdateSub = node.subscribe("HandUpdate", 1000, m2);
         tfListener = new tf::TransformListener(node);
-        std::cout << "WaveDetectionPublisher erzeugt!" << std::endl;
+
+        ROS_INFO("WaveDetectionPublisher created");
     }
 
     void WaveDetectionPublisher::handCreateCallback(const waving_detection::HandCreateConstPtr& msg) {

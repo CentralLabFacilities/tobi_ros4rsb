@@ -5,8 +5,7 @@
  * Created on April 25, 2014, 2:37 PM
  */
 
-#ifndef WAVEDETECTIONPUBLISHER_H
-#define	WAVEDETECTIONPUBLISHER_H
+#pragma once
 
 #include <rst/geometry/Pose.pb.h>
 #include "Publisher.h"
@@ -21,9 +20,9 @@
 
 namespace ros4rsb {
 
-    class WaveDetectionPublisher : public Publisher<rst::geometry::Pose>{
+class WaveDetectionPublisher : public PublisherImpl<rst::geometry::Pose>{
     public:
-       WaveDetectionPublisher(std::string name, ros::NodeHandle node);
+       WaveDetectionPublisher(const std::string &topicIn,const std::string &name, ros::NodeHandle &node);
 
     void handCreateCallback(const waving_detection::HandCreateConstPtr& msg);
     
@@ -31,6 +30,8 @@ namespace ros4rsb {
     
     void handDestroyCallback(const waving_detection::HandDestroyConstPtr& msg);
     
+    CREATE_PUBLISHER_BUILDER_NESTED(WaveDetectionPublisher)
+
 private:
     ros::Subscriber handCreateSub;
     ros::Subscriber handDestroySub;
@@ -43,8 +44,6 @@ private:
         double y,
         double z);
 
-    };
+};
 
 }
-#endif	/* WAVEDETECTIONPUBLISHER_H */
-

@@ -8,14 +8,14 @@ using namespace rst::navigation;
 
 namespace ros4rsb {
 
-    GlobalPlannerStatePublisher::GlobalPlannerStatePublisher(
-            std::string name,
-            ros::NodeHandle node) {
+    GlobalPlannerStatePublisher::GlobalPlannerStatePublisher(const string &topicIn,
+            const std::string &name,
+            ros::NodeHandle &node) {
         function<void(const actionlib_msgs::GoalStatusArrayConstPtr&) > m0 = bind(
                 mem_fn(&GlobalPlannerStatePublisher::callback), this, _1);
 
         rosSubscriber = node.subscribe("/move_base/status", 1000, m0);
-        std::cout << name << " subscribed to /move_base/status topic." << std::endl;
+        ROS_INFO_STREAM(name << " subscribed to /move_base/status topic.");
     }
     
     void setActiveGoal(actionlib_msgs::GoalID goalID) {

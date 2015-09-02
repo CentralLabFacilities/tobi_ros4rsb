@@ -1,5 +1,4 @@
-#ifndef PUBLISHER_H_
-#define PUBLISHER_H_
+#pragma once
 
 #define BOOST_SIGNALS_NO_DEPRECATION_WARNING
 #include <ros/ros.h>
@@ -17,14 +16,20 @@
  */
 namespace ros4rsb {
 
-template<class T>
 class Publisher {
 public:
+    typedef boost::shared_ptr<Publisher> Ptr;
+    virtual ~Publisher() {
+    }
+private:
+};
 
-	Publisher(std::string scope, ros::NodeHandle node) :
-		factory(rsb::getFactory()) {
-		this->scope = scope;
-		this->node = node;
+template<class T>
+class PublisherImpl: public Publisher {
+public:
+
+    PublisherImpl(const std::string &scope, ros::NodeHandle &node) :
+		factory(rsb::getFactory()), scope(scope), node(node) {
 
 #ifndef SKIPCONVERTER
                 try {
@@ -34,7 +39,7 @@ public:
                     rsb::converter::converterRepository<std::string>()->registerConverter(
                                     converter);
                 } catch (std::invalid_argument &e) {
-                    std::cout << "Warning: trying to register two converters for same type" << std::endl;
+                    ROS_WARN("Warning: trying to register two converters for same type");
                 }
 #endif
 
@@ -42,7 +47,7 @@ public:
 
 	}
 
-	virtual ~Publisher() {
+	virtual ~PublisherImpl() {
 		rosSubscriber.shutdown();
 	}
 
@@ -63,6 +68,30 @@ protected:
 	typename rsb::Informer<T>::Ptr rsbInformer;
 };
 
-}
+class PublisherBuilder {
+public:
+    typedef boost::shared_ptr<PublisherBuilder> Ptr;
+    PublisherBuilder(const std::string &publisherName): publisherName(publisherName) {
+    }
+    virtual std::string getPublisherName() const {
+        return publisherName;
+    }
+    virtual Publisher::Ptr build(const std::string &topicIn, const std::string &scopeOut, ros::NodeHandle &node) const = 0;
+    virtual ~PublisherBuilder() {
+    }
+protected:
+    std::string publisherName;
+};
 
-#endif /* PUBLISHER_H_ */
+#define CREATE_PUBLISHER_BUILDER_NESTED(PUBLISHER_NAME) class Builder: public PublisherBuilder {\
+public:\
+    Builder(const std::string &publisherName) :\
+            PublisherBuilder(publisherName) {\
+    }\
+    virtual Publisher::Ptr build(const std::string &topicIn, const std::string &scopeOut, ros::NodeHandle &node) const {\
+        ROS_INFO_STREAM("Building publisher " << publisherName << ", topic: " << topicIn << ", scope: " << scopeOut);\
+        return Publisher::Ptr(new PUBLISHER_NAME(topicIn, scopeOut, node));\
+    }\
+};
+
+}

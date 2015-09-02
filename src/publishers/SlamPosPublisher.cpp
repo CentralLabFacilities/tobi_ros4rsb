@@ -19,14 +19,14 @@ using namespace boost;
 
 namespace ros4rsb {
 
-SlamPosPublisher::SlamPosPublisher(string name, NodeHandle node) :
-	Publisher(name, node), hasData(false) {
+SlamPosPublisher::SlamPosPublisher(const string &topicIn,string name, NodeHandle node) :
+        PublisherImpl(name, node), hasData(false) {
 
     function<void(const nav_msgs::Odometry::ConstPtr&)> m1 = bind(
             mem_fn(&SlamPosPublisher::local_callback), this, _1);
-    rosSubscriber = node.subscribe("pose", 1000, m1);
+    rosSubscriber = node.subscribe(topicIn, 1000, m1);
     tfListener = new tf::TransformListener(node);
-    std::cout << name << " subscribed to pose topic." << std::endl;
+    ROS_INFO_STREAM("SlamPosPublisher: " << name << " is subscribing to topic " << topicIn);
 
 	runner = boost::thread(&SlamPosPublisher::publishThread, this);
 

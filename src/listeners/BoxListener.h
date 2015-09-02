@@ -1,6 +1,6 @@
 #pragma onec
 
-#include "Listener.h"
+#include "ListenerPub.h"
 
 #include <rst/geometry/BoundingBox3DFloat.pb.h>
 #include <rsb/Factory.h>
@@ -24,10 +24,12 @@ typedef rst::geometry::BoundingBox3DFloat Box;
 typedef visualization_msgs::Marker Marker;
 typedef boost::shared_ptr<Box> BoxPtr;
 
-class BoxListener : public Listener<Box, Marker> {
+class BoxListener : public ListenerPub<Box, Marker> {
 public:
 	BoxListener(const std::string &scope, const std::string &topic, ros::NodeHandle node);
 	virtual ~BoxListener();
 	void callback(BoxPtr data);
+
+	CREATE_LISTENER_BUILDER_NESTED(BoxListener)
 };
 }

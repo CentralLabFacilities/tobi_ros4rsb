@@ -24,14 +24,16 @@
 
 namespace ros4rsb {
 
-    class SlamMapPublisher : public Publisher<rst::navigation::OccupancyGrid2DInt> {
+    class SlamMapPublisher : public PublisherImpl<rst::navigation::OccupancyGrid2DInt> {
     public:
-        SlamMapPublisher(std::string name, ros::NodeHandle node);
+        SlamMapPublisher(const std::string &topicIn,const std::string &name, ros::NodeHandle &node);
         virtual ~SlamMapPublisher();
         // TODO: Change the message this Publisher is listening to
         void callback(const nav_msgs::OccupancyGridConstPtr &message);
 
         void publishThread();
+
+        CREATE_PUBLISHER_BUILDER_NESTED(SlamMapPublisher)
 
     private:
         boost::mutex mutex;

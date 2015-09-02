@@ -8,7 +8,7 @@ using namespace rst;
 namespace ros4rsb {
 
 BoxListener::BoxListener(const string &scope, const string &topic, NodeHandle node) :
-		Listener(scope, topic, node) {
+		ListenerPub(scope, topic, node) {
 }
 
 BoxListener::~BoxListener() {

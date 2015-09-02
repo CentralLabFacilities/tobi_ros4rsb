@@ -7,6 +7,7 @@ project(ros4rsb)
 
 find_package(catkin REQUIRED COMPONENTS message_generation 
                                         tf
+                                        tf2_ros
                                         dynamic_reconfigure
                                         costmap_2d
                                         actionlib
@@ -17,11 +18,13 @@ find_package(catkin REQUIRED COMPONENTS message_generation
                                         nav_msgs
                                         diagnostic_msgs
                                         actionlib_msgs
+                                        moveit_ros_planning_interface
                                         roscpp 
                                         roslib)
 
 catkin_package(CATKIN_DEPENDS message_runtime
                               tf
+                              tf2_ros
                               dynamic_reconfigure
                               costmap_2d
                               actionlib
@@ -32,6 +35,7 @@ catkin_package(CATKIN_DEPENDS message_runtime
                               nav_msgs
                               diagnostic_msgs
                               actionlib_msgs
+                              moveit_ros_planning_interface
                               roscpp
                               roslib
                               )
@@ -47,10 +51,10 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 MESSAGE(STATUS "Eigen: ${EIGEN3_INCLUDE_DIR}")
 
 # Try to find RSB and its components
-find_package(RSC QUIET REQUIRED)
-find_package(RSB QUIET REQUIRED)
-find_package(RST QUIET REQUIRED COMPONENTS sandbox)
-find_package(rst-converters QUIET REQUIRED)
+find_package(RSC 0.12 QUIET REQUIRED)
+find_package(RSB 0.12 QUIET REQUIRED)
+find_package(RST 0.12 QUIET REQUIRED COMPONENTS sandbox)
+find_package(rst-converters 0.12 QUIET REQUIRED)
 find_package(ProtocolBuffers QUIET REQUIRED)
 
 message(STATUS "RSC version: ${RSC_VERSION}")
@@ -88,6 +92,8 @@ set(SOURCES src/ros4rsb.cpp
             src/publishers/GlobalPlanPublisher.cpp
             src/publishers/WaveDetectionPublisher.cpp
             src/listeners/BoxListener.cpp
+            src/listeners/CollisionSurfaceListener.cpp
+            src/listeners/CollisionBoxListener.cpp
             #src/actuators/VelocityCommander.cpp
             #src/servers/NavigationServer.cpp         
             src/actuators/VelocityCommander.cpp
