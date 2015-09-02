@@ -156,19 +156,27 @@ NavigationServer::NavigationServer(const std::string &name, ros::NodeHandle &nod
     ROS_INFO("starting navigation server");
 
     //tell the action client that we want to spin a thread by default
-    moveBaseClient = new SimpleActionClient<MoveBaseAction>(node, "move_base", true);
+    moveBaseClient = new SimpleActionClient<MoveBaseAction>("/move_base", true);
 
     function<void(const nav_msgs::Odometry::ConstPtr&)> m1 = bind(
             mem_fn(&NavigationServer::poseCallback), this, _1);
-    rosSubscriber = node.subscribe("pose", 1000, m1);
+    rosSubscriber = node.subscribe("/pose", 1000, m1);
 
     //wait for the action server to come up
     ROS_INFO("waiting for move_base action server...");
-    if (!moveBaseClient->waitForServer(ros::Duration(10.0))) {
-        ROS_FATAL("move_base action server is not present!");
-        throw ros::Exception("move_base action server is not present!");
+    for (int attempt = 0; attempt < 5; attempt++) {
+        if (!moveBaseClient->waitForServer(ros::Duration(5.0))) {
+            ROS_WARN("move_base action server is not present yet");
+        } else {
+            break;
+        }
     }
-    ROS_INFO("move_base action server ready\n");
+    if (moveBaseClient->isServerConnected()) {
+        ROS_INFO("move_base action server ready");
+    } else {
+        ROS_INFO("move_base action server failed to connect!");
+        throw ros::Exception("move_base action server failed to connect!");
+    }
     costmap = new Costmap("/move_base/local_costmap", node);
 
     // Create a client for communicating with the move_base dynamic_reconfiguration server
