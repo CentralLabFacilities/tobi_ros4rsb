@@ -10,8 +10,8 @@
 #include "publishers/GlobalPlannerStatePublisher.h"
 #include "publishers/WaveDetectionPublisher.h"
 #include "listeners/BoxListener.h"
-//include "listeners/CollisionBoxListener.h"
-//include "listeners/CollisionSurfaceListener.h"
+#include "listeners/CollisionBoxListener.h"
+#include "listeners/CollisionSurfaceListener.h"
 #include "servers/NavigationServer.h"
 #include <ros/ros.h>
 #include <ros/param.h>
@@ -41,8 +41,8 @@ int main(int argc, char **argv) {
 
     // register listeners
     listenerBuilders.push_back(ListenerBuilder::Ptr(new BoxListener::Builder("BoxListener")));
-    //listenerBuilders.push_back(ListenerBuilder::Ptr(new CollisionBoxListener::Builder("CollisionBoxListener")));
-    //listenerBuilders.push_back(ListenerBuilder::Ptr(new CollisionSurfaceListener::Builder("CollisionSurfaceListener")));
+    listenerBuilders.push_back(ListenerBuilder::Ptr(new CollisionBoxListener::Builder("CollisionBoxListener")));
+    listenerBuilders.push_back(ListenerBuilder::Ptr(new CollisionSurfaceListener::Builder("CollisionSurfaceListener")));
 
     // register servers
     serverBuilders.push_back(ServerBuilder::Ptr(new NavigationServer::Builder("NavigationServer")));
