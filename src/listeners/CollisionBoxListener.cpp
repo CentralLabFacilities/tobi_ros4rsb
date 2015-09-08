@@ -17,9 +17,10 @@ using namespace rst;
 namespace ros4rsb {
 
 const string CollisionBoxListener::DEFAULT_OBJECT_PREFIX = "object";
+const std::string CollisionBoxListener::DEFAULT_FRAME_ORIGIN_ARM = "katana_base_link";
 
 CollisionBoxListener::CollisionBoxListener(const string &scopeIn, const string &topicOut, ros::NodeHandle &node) :
-        ListenerScene(scopeIn) {
+        ListenerScene(scopeIn),frameOriginArm(DEFAULT_FRAME_ORIGIN_ARM) {
 }
 
 CollisionBoxListener::~CollisionBoxListener() {
@@ -57,22 +58,29 @@ void CollisionBoxListener::callback(BoxesPtr input) {
         pose.pose.orientation.z = box.region().region().transformation().rotation().qz();
         pose.header.frame_id = box.region().region().transformation().translation().frame_id();
 
+        geometry_msgs::PoseStamped poseArm;
+        transformer.transform(pose, poseArm, frameOriginArm);
+        poseArm.pose.orientation.w = 1.0;
+        poseArm.pose.orientation.x = 0.0;
+        poseArm.pose.orientation.y = 0.0;
+        poseArm.pose.orientation.z = 0.0;
+
         shape_msgs::SolidPrimitive primitive;
         primitive.type = primitive.BOX;
         primitive.dimensions.resize(3);
-        primitive.dimensions[0] = box.region().region().width();
-        primitive.dimensions[1] = box.region().region().depth();
-        primitive.dimensions[2] = box.region().region().height();
+        primitive.dimensions[0] = box.region().region().height();
+        primitive.dimensions[1] = box.region().region().width();
+        primitive.dimensions[2] = box.region().region().depth();
 
         stringstream ss;
         ss << DEFAULT_OBJECT_PREFIX << box.info().id();
         string name = ss.str();
 
         moveit_msgs::CollisionObject object;
-        object.header.frame_id = pose.header.frame_id;
+        object.header.frame_id = poseArm.header.frame_id;
         object.id = ss.str();
         object.operation = object.ADD;
-        object.primitive_poses.push_back(pose.pose);
+        object.primitive_poses.push_back(poseArm.pose);
         object.primitives.push_back(primitive);
 
         objects.push_back(object);

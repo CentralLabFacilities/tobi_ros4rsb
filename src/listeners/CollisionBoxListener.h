@@ -2,6 +2,8 @@
 
 #include "ListenerScene.h"
 
+#include "../util/TransformerTF.h"
+
 #include <rst/tracking/TrackedClassifiedRegions3D.pb.h>
 #include <rsb/Factory.h>
 #include <rsb/converter/ProtocolBufferConverter.h>
@@ -34,7 +36,10 @@ public:
 
 private:
 	std::vector<std::string> lastObjects;
+	TransformerTF transformer;
+	std::string frameOriginArm;
 protected:
 	 static const std::string DEFAULT_OBJECT_PREFIX;
+	 static const std::string DEFAULT_FRAME_ORIGIN_ARM;
 };
 }

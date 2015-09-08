@@ -2,6 +2,8 @@
 
 #include "ListenerScene.h"
 
+#include "../util/TransformerTF.h"
+
 #include <rst/geometry/PolygonalPatch3DSet.pb.h>
 #include <rsb/Factory.h>
 #include <rsb/converter/ProtocolBufferConverter.h>
@@ -39,10 +41,6 @@ private:
 
 	std::string frameOriginArm;
 
-	tf2_ros::Buffer tfBuffer;
-    tf2_ros::TransformListener tfListener;
-
-    bool transform(const rst::geometry::Pose& poseIn, geometry_msgs::PoseStamped& poseOut, const std::string &target_frame);
-    bool transform(const geometry_msgs::PoseStamped& poseIn, geometry_msgs::PoseStamped& poseOut, const std::string &target_frame);
+	TransformerTF transformer;
 };
 }
