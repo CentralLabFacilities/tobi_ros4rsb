@@ -99,6 +99,7 @@ set(SOURCES src/ros4rsb.cpp
             src/actuators/VelocityCommander.cpp
             src/servers/Costmap.cpp
             src/servers/NavigationServer.cpp
+            src/util/TransformerTF.cpp
             )
 
 add_executable(ros4rsb ${SOURCES})
