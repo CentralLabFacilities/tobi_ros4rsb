@@ -43,6 +43,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     vector<moveit_msgs::CollisionObject> surfaces;
 
     int numPatches = input->patches_size();
+    ROS_DEBUG_STREAM("CollisionSurfaceListener forwarding " << numPatches << " surfaces");
     for (size_t i = 0; i < numPatches; i++) {
         const ::rst::geometry::PolygonalPatch3D& patch = input->patches(i);
         stringstream ss;
@@ -133,7 +134,7 @@ bool CollisionSurfaceListener::transform(const geometry_msgs::PoseStamped& poseI
         string from = myPose.header.frame_id;
         boost::algorithm::replace_all(from, "/", "");
         myPose.header.frame_id = from;
-        ROS_INFO_STREAM("transform " << from << " to " << target_frame);
+        ROS_DEBUG_STREAM("transform " << from << " to " << target_frame);
         tfBuffer.transform(myPose, poseOut, target_frame);
         poseOut.header.frame_id = target_frame;
         return true;

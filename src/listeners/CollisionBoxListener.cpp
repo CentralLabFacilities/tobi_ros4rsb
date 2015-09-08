@@ -42,6 +42,8 @@ void CollisionBoxListener::callback(BoxesPtr input) {
     vector<moveit_msgs::CollisionObject> objects;
 
     int numPatches = input->region_size();
+
+    ROS_DEBUG_STREAM("CollisionBoxListener forwarding " << numPatches << " boxes");
     for (size_t i = 0; i < numPatches; i++) {
         const ::rst::tracking::TrackedClassifiedRegion3D& box = input->region(i);
 

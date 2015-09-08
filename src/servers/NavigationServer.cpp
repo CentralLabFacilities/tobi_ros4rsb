@@ -174,7 +174,7 @@ NavigationServer::NavigationServer(const std::string &name, ros::NodeHandle &nod
     if (moveBaseClient->isServerConnected()) {
         ROS_INFO("move_base action server ready");
     } else {
-        ROS_INFO("move_base action server failed to connect!");
+        ROS_FATAL("move_base action server failed to connect!");
         throw ros::Exception("move_base action server failed to connect!");
     }
     costmap = new Costmap("/move_base/local_costmap", node);

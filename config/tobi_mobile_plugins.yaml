@@ -28,7 +28,7 @@ listener_list:
     scope: /boxes
     topic: box_marker
   - name: CollisionBoxListener
-    scope: /clafu/out/region3d
+    scope: /clafu/results/region3d
     topic: $$$ignored$$$
   - name: CollisionSurfaceListener
     scope: /clafu/table
