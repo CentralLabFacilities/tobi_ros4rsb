@@ -52,10 +52,14 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         double xMin, yMin;
         xMin = yMin = numeric_limits<double>::max();
 
+        shape_msgs::Mesh mesh;
         int numBorder = patch.border_size();
         for (size_t j = 0; j < numBorder; j++) {
             const ::rst::math::Vec2DFloat& border = patch.border(j);
-
+            geometry_msgs::Point p;
+            p.x = border.x();
+            p.y = border.y();
+            mesh.vertices.push_back(p);
             if (xMax < border.x())
                 xMax = border.x();
             if (yMax < border.y())
@@ -86,8 +90,10 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         surface.header.frame_id = patch.base().translation().frame_id();
         surface.id = ss.str();
         surface.operation = surface.ADD;
-        surface.primitive_poses.push_back(poseNew);
-        surface.primitives.push_back(primitive);
+//        surface.primitive_poses.push_back(poseNew);
+//        surface.primitives.push_back(primitive);
+        surface.mesh_poses.push_back(poseNew);
+        surface.meshes.push_back(mesh);
 
         surfaces.push_back(surface);
     }
