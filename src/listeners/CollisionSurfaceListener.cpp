@@ -83,7 +83,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         poseNew.orientation.z = patch.base().rotation().qz();
 
         moveit_msgs::CollisionObject surface;
-        surface.header.frame_id = frameOriginArm;
+        surface.header.frame_id = patch.base().translation().frame_id();
         surface.id = ss.str();
         surface.operation = surface.ADD;
         surface.primitive_poses.push_back(poseNew);
