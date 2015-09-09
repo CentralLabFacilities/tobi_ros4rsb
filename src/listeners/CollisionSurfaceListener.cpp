@@ -5,6 +5,9 @@
 #include <boost/algorithm/string.hpp>
 
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <geometric_shapes/mesh_operations.h>
+#include <geometric_shapes/shape_messages.h>
+#include <geometric_shapes/shape_operations.h>
 #include "CollisionSurfaceListener.h"
 
 using namespace std;
@@ -52,14 +55,12 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         double xMin, yMin;
         xMin = yMin = numeric_limits<double>::max();
 
-        shape_msgs::Mesh mesh;
+        EigenSTL::vector_Vector3d vertices;
         int numBorder = patch.border_size();
         for (size_t j = 0; j < numBorder; j++) {
             const ::rst::math::Vec2DFloat& border = patch.border(j);
-            geometry_msgs::Point p;
-            p.x = border.x();
-            p.y = border.y();
-            mesh.vertices.push_back(p);
+            Eigen::Vector3d p(border.x(), border.y(), 0.0);
+            vertices.push_back(p);
             if (xMax < border.x())
                 xMax = border.x();
             if (yMax < border.y())
@@ -69,6 +70,12 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
             if (yMin > border.y())
                 yMin = border.y();
         }
+
+        //convert
+        shapes::Mesh* mesh = shapes::createMeshFromVertices(vertices);
+        shape_msgs::Mesh mesh_msg;
+        shapes::ShapeMsg shape_mesh_msg = mesh_msg;
+        shapes::constructMsgFromShape(mesh,shape_mesh_msg);
 
         shape_msgs::SolidPrimitive primitive;
         primitive.type = primitive.BOX;
@@ -93,7 +100,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
 //        surface.primitive_poses.push_back(poseNew);
 //        surface.primitives.push_back(primitive);
         surface.mesh_poses.push_back(poseNew);
-        surface.meshes.push_back(mesh);
+        surface.meshes.push_back(mesh_msg);
 
         surfaces.push_back(surface);
     }
