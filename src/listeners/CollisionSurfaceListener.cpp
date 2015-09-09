@@ -47,53 +47,40 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         ss << "surface" << i;
         string name = ss.str();
 
-        geometry_msgs::PoseStamped pose;
-        if (!transformer.transform(patch.base(), pose, frameOriginArm))
-            continue;
-
-        Eigen::Affine3d transform;
-        transform.fromPositionOrientationScale(
-                Eigen::Vector3d(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z),
-                Eigen::Quaterniond(pose.pose.orientation.w, pose.pose.orientation.x,
-                        pose.pose.orientation.y, pose.pose.orientation.z), Eigen::Vector3d::Ones());
-
-        double xMax, yMax, zMax;
-        xMax = yMax = zMax = -numeric_limits<double>::max();
-        double xMin, yMin, zMin;
-        xMin = yMin = zMin = numeric_limits<double>::max();
+        double xMax, yMax;
+        xMax = yMax = -numeric_limits<double>::max();
+        double xMin, yMin;
+        xMin = yMin = numeric_limits<double>::max();
 
         int numBorder = patch.border_size();
         for (size_t j = 0; j < numBorder; j++) {
             const ::rst::math::Vec2DFloat& border = patch.border(j);
-            Eigen::Vector3d vec(border.x(), border.y(), 0);
-            vec = transform * vec;
 
-            if (xMax < vec(0))
-                xMax = vec(0);
-            if (yMax < vec(1))
-                yMax = vec(1);
-            if (zMax < vec(2))
-                zMax = vec(2);
-            if (xMin > vec(0))
-                xMin = vec(0);
-            if (yMin > vec(1))
-                yMin = vec(1);
-            if (zMin > vec(2))
-                zMin = vec(2);
+            if (xMax < border.x())
+                xMax = border.x();
+            if (yMax < border.y())
+                yMax = border.y();
+            if (xMin > border.x())
+                xMin = border.x();
+            if (yMin > border.y())
+                yMin = border.y();
         }
 
         shape_msgs::SolidPrimitive primitive;
         primitive.type = primitive.BOX;
         primitive.dimensions.resize(3);
         primitive.dimensions[0] = xMax - xMin;
-        primitive.dimensions[1] = yMax - yMin;;
-        primitive.dimensions[2] = zMax - zMin;
+        primitive.dimensions[1] = yMax - yMin;
+        primitive.dimensions[2] = 0.01;
 
         geometry_msgs::Pose poseNew;
-        poseNew.position.x = xMax - (xMax - xMin) / 2.0;
-        poseNew.position.y = yMax - (yMax - yMin) / 2.0;
-        poseNew.position.z = zMax - (zMax - zMin) / 2.0;
-        poseNew.orientation.w = 1.0;
+        poseNew.position.x = patch.base().translation().x();
+        poseNew.position.y = patch.base().translation().y();
+        poseNew.position.z = patch.base().translation().z();
+        poseNew.orientation.w = patch.base().rotation().qw();
+        poseNew.orientation.x = patch.base().rotation().qx();
+        poseNew.orientation.y = patch.base().rotation().qy();
+        poseNew.orientation.z = patch.base().rotation().qz();
 
         moveit_msgs::CollisionObject surface;
         surface.header.frame_id = frameOriginArm;
