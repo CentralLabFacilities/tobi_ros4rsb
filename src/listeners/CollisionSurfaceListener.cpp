@@ -72,10 +72,10 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         }
 
         //convert
-        shapes::Mesh* mesh = shapes::createMeshFromVertices(vertices);
-        shape_msgs::Mesh mesh_msg;
-        shapes::ShapeMsg shape_mesh_msg = mesh_msg;
-        shapes::constructMsgFromShape(mesh,shape_mesh_msg);
+//        shapes::Mesh* mesh = shapes::createMeshFromVertices(vertices);
+//        shape_msgs::Mesh mesh_msg;
+//        shapes::ShapeMsg shape_mesh_msg = mesh_msg;
+//        shapes::constructMsgFromShape(mesh,shape_mesh_msg);
 
         shape_msgs::SolidPrimitive primitive;
         primitive.type = primitive.BOX;
@@ -97,10 +97,10 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         surface.header.frame_id = patch.base().translation().frame_id();
         surface.id = ss.str();
         surface.operation = surface.ADD;
-//        surface.primitive_poses.push_back(poseNew);
-//        surface.primitives.push_back(primitive);
-        surface.mesh_poses.push_back(poseNew);
-        surface.meshes.push_back(mesh_msg);
+        surface.primitive_poses.push_back(poseNew);
+        surface.primitives.push_back(primitive);
+//        surface.mesh_poses.push_back(poseNew);
+//        surface.meshes.push_back(mesh_msg);
 
         surfaces.push_back(surface);
     }
