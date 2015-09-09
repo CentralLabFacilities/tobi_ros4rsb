@@ -84,6 +84,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         primitive.dimensions[1] = yMax - yMin;
         primitive.dimensions[2] = 0.01;
 
+        // todo: this is dangerous, because ros assumes the applied pose to be the center of the
+        // object. The RST type does not require the pose to be the center. This might cause a
+        // shift in the x-y plane.
         geometry_msgs::Pose poseNew;
         poseNew.position.x = patch.base().translation().x();
         poseNew.position.y = patch.base().translation().y();
