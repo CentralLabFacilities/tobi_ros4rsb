@@ -75,7 +75,7 @@ void SlamPosPublisher::global_callback(
 void SlamPosPublisher::local_callback(
 		const nav_msgs::Odometry::ConstPtr &message) {
 
-    ROS_INFO_STREAM("SlamPosPublisher: local callback triggered");
+    //ROS_INFO_STREAM("SlamPosPublisher: local callback triggered");
 
 	boost::mutex::scoped_lock lock(mutex);
 
@@ -97,7 +97,7 @@ void SlamPosPublisher::local_callback(
 			/ 1000;
 	hasData = true;
 
-    ROS_INFO_STREAM("SlamPosPublisher: local callback finished");
+    //ROS_INFO_STREAM("SlamPosPublisher: local callback finished");
 }
 
 void SlamPosPublisher::convertPoseToPositionData(
