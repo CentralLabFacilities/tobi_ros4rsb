@@ -26,7 +26,7 @@ SlamPosPublisher::SlamPosPublisher(const string &topicIn,string name, NodeHandle
             mem_fn(&SlamPosPublisher::local_callback), this, _1);
     rosSubscriber = node.subscribe(topicIn, 1000, m1);
     tfListener = new tf::TransformListener(node);
-    ROS_INFO_STREAM("SlamPosPublisher: " << name << " is subscribing to topic " << topicIn);
+    ROS_INFO_STREAM("SlamPosPublisher: " << name << " is subscribing to topic " << topicIn << " node is " << node);
 
 	runner = boost::thread(&SlamPosPublisher::publishThread, this);
 
@@ -75,6 +75,8 @@ void SlamPosPublisher::global_callback(
 void SlamPosPublisher::local_callback(
 		const nav_msgs::Odometry::ConstPtr &message) {
 
+    ROS_INFO_STREAM("SlamPosPublisher: local callback triggered");
+
 	boost::mutex::scoped_lock lock(mutex);
 
 	geometry_msgs::PoseStamped poseOut;
@@ -94,6 +96,8 @@ void SlamPosPublisher::local_callback(
 	timestamp = poseIn.header.stamp.sec * 1000000 + poseIn.header.stamp.nsec
 			/ 1000;
 	hasData = true;
+
+    ROS_INFO_STREAM("SlamPosPublisher: local callback finished");
 }
 
 void SlamPosPublisher::convertPoseToPositionData(
