@@ -26,7 +26,7 @@ SlamPosPublisher::SlamPosPublisher(const string &topicIn,string name, NodeHandle
             mem_fn(&SlamPosPublisher::local_callback), this, _1);
     rosSubscriber = node.subscribe(topicIn, 1000, m1);
     tfListener = new tf::TransformListener(node);
-    ROS_INFO_STREAM("SlamPosPublisher: " << name << " is subscribing to topic " << topicIn << " node is " << node);
+    ROS_INFO_STREAM("SlamPosPublisher: " << name << " is subscribing to topic " << topicIn);
 
 	runner = boost::thread(&SlamPosPublisher::publishThread, this);
 
