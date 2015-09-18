@@ -30,9 +30,9 @@ listener_list:
 #  - name: CollisionBoxListener
 #    scope: /clafu/results/region3d
 #    topic: $$$ignored$$$
-#  - name: CollisionSurfaceListener
-#    scope: /clafu/table
-#    topic: $$$ignored$$$
+  - name: CollisionSurfaceListener
+    scope: /clafu/table
+    topic: $$$ignored$$$
 server_list:
   - name: NavigationServer
     scope: /nav_server
