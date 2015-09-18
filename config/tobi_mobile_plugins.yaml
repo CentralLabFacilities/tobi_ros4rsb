@@ -27,12 +27,12 @@ listener_list:
   - name: BoxListener
     scope: /boxes
     topic: box_marker
-  - name: CollisionBoxListener
-    scope: /clafu/results/region3d
-    topic: $$$ignored$$$
-  - name: CollisionSurfaceListener
-    scope: /clafu/table
-    topic: $$$ignored$$$
+#  - name: CollisionBoxListener
+#    scope: /clafu/results/region3d
+#    topic: $$$ignored$$$
+#  - name: CollisionSurfaceListener
+#    scope: /clafu/table
+#    topic: $$$ignored$$$
 server_list:
   - name: NavigationServer
     scope: /nav_server
