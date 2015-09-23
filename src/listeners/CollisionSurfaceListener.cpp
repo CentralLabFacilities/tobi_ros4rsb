@@ -102,7 +102,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         // object. The RST type does not require the pose to be the center. Therefore we shift
         // shift in the x-y plane.
         geometry_msgs::PoseStamped poseNew;
-        transformer.transform(poseOld, poseNew, "base_frame"),
+        transformer.transform(poseOld, poseNew, "base_link"),
         poseNew.pose.position.x = poseNew.pose.position.x + (xCenter - poseNew.pose.position.x);
         poseNew.pose.position.y = poseNew.pose.position.y + (yCenter - poseNew.pose.position.y);
 
