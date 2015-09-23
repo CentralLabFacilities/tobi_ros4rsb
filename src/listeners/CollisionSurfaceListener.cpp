@@ -87,23 +87,30 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         primitive.dimensions[1] = yMax - yMin;
         primitive.dimensions[2] = 0.01;
 
-        // todo: this is dangerous, because ros assumes the applied pose to be the center of the
-        // object. The RST type does not require the pose to be the center. This might cause a
+
+        geometry_msgs::PoseStamped poseOld;
+        poseOld.pose.position.x = patch.base().translation().x();
+        poseOld.pose.position.y = patch.base().translation().y();
+        poseOld.pose.position.z = patch.base().translation().z();
+        poseOld.pose.orientation.w = patch.base().rotation().qw();
+        poseOld.pose.orientation.x = patch.base().rotation().qx();
+        poseOld.pose.orientation.y = patch.base().rotation().qy();
+        poseOld.pose.orientation.z = patch.base().rotation().qz();
+        poseOld.header.frame_id = patch.base().translation().frame_id();
+
+        // Attention: Ros assumes the applied pose to be the center of the
+        // object. The RST type does not require the pose to be the center. Therefore we shift
         // shift in the x-y plane.
-        geometry_msgs::Pose poseNew;
-        poseNew.position.x = patch.base().translation().x() - (xCenter - patch.base().translation().x());
-        poseNew.position.y = patch.base().translation().y() - (yCenter - patch.base().translation().y());
-        poseNew.position.z = patch.base().translation().z();
-        poseNew.orientation.w = patch.base().rotation().qw();
-        poseNew.orientation.x = patch.base().rotation().qx();
-        poseNew.orientation.y = patch.base().rotation().qy();
-        poseNew.orientation.z = patch.base().rotation().qz();
+        geometry_msgs::PoseStamped poseNew;
+        transformer.transform(poseOld, poseNew, "base_frame"),
+        poseNew.pose.position.x = poseNew.pose.position.x + (xCenter - poseNew.pose.position.x);
+        poseNew.pose.position.y = poseNew.pose.position.y + (yCenter - poseNew.pose.position.y);
 
         moveit_msgs::CollisionObject surface;
-        surface.header.frame_id = patch.base().translation().frame_id();
+        surface.header.frame_id = poseNew.header.frame_id;
         surface.id = ss.str();
         surface.operation = surface.ADD;
-        surface.primitive_poses.push_back(poseNew);
+        surface.primitive_poses.push_back(poseNew.pose);
         surface.primitives.push_back(primitive);
 //        surface.mesh_poses.push_back(poseNew);
 //        surface.meshes.push_back(mesh_msg);
