@@ -71,6 +71,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
                 yMin = border.y();
         }
 
+        double xCenter = xMin + (xMax - xMin) / 2.0;
+        double yCenter = yMin + (yMax - yMin) / 2.0;
+
         //convert
 //        shapes::Mesh* mesh = shapes::createMeshFromVertices(vertices);
 //        shape_msgs::Mesh mesh_msg;
@@ -88,8 +91,8 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         // object. The RST type does not require the pose to be the center. This might cause a
         // shift in the x-y plane.
         geometry_msgs::Pose poseNew;
-        poseNew.position.x = patch.base().translation().x();
-        poseNew.position.y = patch.base().translation().y();
+        poseNew.position.x = patch.base().translation().x() + (xCenter - patch.base().translation().x());
+        poseNew.position.y = patch.base().translation().y() + (yCenter - patch.base().translation().y());
         poseNew.position.z = patch.base().translation().z();
         poseNew.orientation.w = patch.base().rotation().qw();
         poseNew.orientation.x = patch.base().rotation().qx();
