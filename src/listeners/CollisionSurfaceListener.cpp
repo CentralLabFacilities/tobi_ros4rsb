@@ -91,8 +91,8 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         // object. The RST type does not require the pose to be the center. This might cause a
         // shift in the x-y plane.
         geometry_msgs::Pose poseNew;
-        poseNew.position.x = patch.base().translation().x() + (xCenter - patch.base().translation().x());
-        poseNew.position.y = patch.base().translation().y() + (yCenter - patch.base().translation().y());
+        poseNew.position.x = patch.base().translation().x() - (xCenter - patch.base().translation().x());
+        poseNew.position.y = patch.base().translation().y() - (yCenter - patch.base().translation().y());
         poseNew.position.z = patch.base().translation().z();
         poseNew.orientation.w = patch.base().rotation().qw();
         poseNew.orientation.x = patch.base().rotation().qx();
