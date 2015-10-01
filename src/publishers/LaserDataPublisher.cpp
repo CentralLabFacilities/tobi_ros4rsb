@@ -17,7 +17,7 @@ namespace ros4rsb {
 LaserDataPublisher::LaserDataPublisher(const string &topicIn,string name, ros::NodeHandle node) :
 		PublisherImpl(name, node), dataAvailable(false) {
 
-    node.param<bool>("/isInterleavedLaserData", isInterleavedMode, true);
+    node.param<bool>("isInterleavedLaserData", isInterleavedMode, true);
 
 	function<void(const sensor_msgs::LaserScan::ConstPtr&)> m0 = bind(
 			mem_fn(&LaserDataPublisher::callback), this, _1);
