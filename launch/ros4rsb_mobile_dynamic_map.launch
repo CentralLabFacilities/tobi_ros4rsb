@@ -6,7 +6,7 @@
         
         <rosparam file="$(find ros4rsb)/config/tobi_mobile_plugins.yaml" />
         
-        <param name="isInterleavedLaserData" value="true" type="bool" /> 
+        <param name="isInterleavedLaserData" value="false" type="bool" /> 
 	</node>
 	
 </launch>
