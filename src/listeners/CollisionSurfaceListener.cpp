@@ -103,8 +103,8 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         // shift in the x-y plane.
         geometry_msgs::PoseStamped poseNew;
         transformer.transform(poseOld, poseNew, "base_link"),
-        poseNew.pose.position.x -= xCenter;
-        poseNew.pose.position.y -= yCenter;
+//        poseNew.pose.position.x -= xCenter;
+//        poseNew.pose.position.y -= yCenter;
 
         moveit_msgs::CollisionObject surface;
         surface.header.frame_id = poseNew.header.frame_id;
