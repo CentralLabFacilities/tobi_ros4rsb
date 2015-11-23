@@ -17,7 +17,7 @@ using namespace rst;
 
 namespace ros4rsb {
 
-const std::string CollisionSurfaceListener::DEFAULT_FRAME_ORIGIN_ARM = "katana_base_link";
+const std::string CollisionSurfaceListener::DEFAULT_FRAME_ORIGIN_ARM = "base_link";
 
 CollisionSurfaceListener::CollisionSurfaceListener(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle &node) :
         ListenerScene(scopeIn),

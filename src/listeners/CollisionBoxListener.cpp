@@ -17,7 +17,7 @@ using namespace rst;
 namespace ros4rsb {
 
 const string CollisionBoxListener::DEFAULT_OBJECT_PREFIX = "object";
-const std::string CollisionBoxListener::DEFAULT_FRAME_ORIGIN_ARM = "katana_base_link";
+const std::string CollisionBoxListener::DEFAULT_FRAME_ORIGIN_ARM = "base_link";
 
 CollisionBoxListener::CollisionBoxListener(const string &scopeIn, const string &topicOut, ros::NodeHandle &node) :
         ListenerScene(scopeIn),frameOriginArm(DEFAULT_FRAME_ORIGIN_ARM) {
