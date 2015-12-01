@@ -90,6 +90,7 @@ set(SOURCES src/ros4rsb.cpp
             src/publishers/SlamMapPublisher.cpp
             src/publishers/SlamPosPublisher.cpp
             src/publishers/GlobalPlanPublisher.cpp
+            src/publishers/PersonDataPublisher.cpp
             src/publishers/WaveDetectionPublisher.cpp
             src/listeners/BoxListener.cpp
             src/listeners/CollisionSurfaceListener.cpp
