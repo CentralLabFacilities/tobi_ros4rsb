@@ -32,11 +32,14 @@ PersonDataPublisher::~PersonDataPublisher() {
 
 void PersonDataPublisher::callback(
 		const people_msgs::People::ConstPtr &message) {
-
+  
+	ROS_DEBUG_STREAM("PersonDataPublisher message callback");
+	
 	boost::mutex::scoped_try_lock lock(myMutex/*, boost::try_to_lock*/);
 	if (!lock.owns_lock()) {
 		return;
 	}
+	ROS_DEBUG_STREAM("PersonDataPublisher message callback");
 	
 	// create correct timestamp
 	uint32_t sec = message->header.stamp.sec;
@@ -76,6 +79,7 @@ void PersonDataPublisher::callback(
 	  p->mutable_body()->mutable_location()->set_x(pTmp.position.x);
 	  p->mutable_body()->mutable_location()->set_y(pTmp.position.y);
 	  p->mutable_body()->mutable_location()->set_z(0);
+	  p->mutable_body()->mutable_location()->set_frame_id("map");
         
 	  //ProbPos oPos;
 	  //pTmp->getPersGlobalOrientation(oPos);
