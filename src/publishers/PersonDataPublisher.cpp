@@ -68,8 +68,14 @@ void PersonDataPublisher::callback(
 	  
 	  //TODO: find better way! critical
 	  //set uuid
-	  p->mutable_tracking_info()->set_id(std::atoi(pTmp.name.c_str()));
-	    
+	  //memcpy(&guid, data, 16);
+	  //p->mutable_tracking_info()->set_id(std::atoi(pTmp.name.c_str()));
+	  int id;
+	  char* pGuid = (char*) &pTmp.name;
+	  
+	  memcpy(pGuid, &id, 4);
+	  p->mutable_tracking_info()->set_id(id);  
+	  
 	  // internally we use millimeters. RST used METERS !!!!!!
 	  //ProbPos xPos, yPos;
 	  //pTmp->getPersGlobalX(xPos);
@@ -80,7 +86,7 @@ void PersonDataPublisher::callback(
 	  p->mutable_body()->mutable_location()->set_y(pTmp.position.y);
 	  p->mutable_body()->mutable_location()->set_z(0);
 	  p->mutable_body()->mutable_location()->set_frame_id("map");
-        
+	  
 	  //ProbPos oPos;
 	  //pTmp->getPersGlobalOrientation(oPos);
 	  //Eigen::Quaternionf quat(Eigen::AngleAxisf(oPos.fPos, Eigen::Vector3f::UnitZ()));
