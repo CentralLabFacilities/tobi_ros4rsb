@@ -11,6 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <boost/uuid/nil_generator.hpp>
+#include <boost/uuid/string_generator.hpp>
+#include <boost/uuid/name_generator.hpp>
+#include <boost/uuid/random_generator.hpp>
+
 using namespace std;
 using namespace boost;
 using namespace rst;
@@ -59,6 +64,7 @@ void PersonDataPublisher::callback(
 	
 	std::vector<people_msgs::Person>::iterator it;
 	
+	boost::uuids::string_generator gen;
 	
 	//fill rsb msg
 	for (it = plist.begin(); it != plist.end(); ++it) {
@@ -69,12 +75,13 @@ void PersonDataPublisher::callback(
 	  //TODO: find better way! critical
 	  //set uuid
 	  //memcpy(&guid, data, 16);
-	  //p->mutable_tracking_info()->set_id(std::atoi(pTmp.name.c_str()));
-	  int id;
-	  char* pGuid = (char*) &pTmp.name;
+	  p->mutable_tracking_info()->set_id(std::atoi(pTmp.name.c_str()));
+	  //boost::uuids::uuid uuid = gen(pTmp.name);
+	  //int* id;
+	  //char* pGuid = (char*) &uuid;
 	  
-	  memcpy(pGuid, &id, 4);
-	  p->mutable_tracking_info()->set_id(id);  
+	  //memcpy(pGuid, id, 4);
+	  //p->mutable_tracking_info()->set_id(*id);  
 	  
 	  // internally we use millimeters. RST used METERS !!!!!!
 	  //ProbPos xPos, yPos;
