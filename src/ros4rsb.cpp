@@ -3,6 +3,7 @@
 #include "publishers/SlamPosPublisher.h"
 #include "publishers/GlobalPlanPublisher.h"
 #include "publishers/LaserDataPublisher.h"
+#include "publishers/PersonDataPublisher.h"
 #include "publishers/OdometryDataPublisher.h"
 #include "publishers/SpeedDataPublisher.h"
 #include "publishers/StallDataPublisher.h"
@@ -38,6 +39,7 @@ int main(int argc, char **argv) {
     publisherBuilders.push_back(PublisherBuilder::Ptr(new SlamPosPublisher::Builder("SlamPosPublisher")));
     publisherBuilders.push_back(PublisherBuilder::Ptr(new SpeedDataPublisher::Builder("SpeedDataPublisher")));
     publisherBuilders.push_back(PublisherBuilder::Ptr(new StallDataPublisher::Builder("StallDataPublisher")));
+    publisherBuilders.push_back(PublisherBuilder::Ptr(new PersonDataPublisher::Builder("PersonDataPublisher")));
 
     // register listeners
     listenerBuilders.push_back(ListenerBuilder::Ptr(new BoxListener::Builder("BoxListener")));

@@ -23,6 +23,9 @@ publisher_list:
   - name: GlobalPlanPublisher
     scope: /ros4rsb/globalplan
     topic: /move_base/NavfnROS/plan
+  - name: PersonDataPublisher
+    scope: /hri/persons
+    topic: /people_tracker/people
 listener_list:
   - name: BoxListener
     scope: /boxes
