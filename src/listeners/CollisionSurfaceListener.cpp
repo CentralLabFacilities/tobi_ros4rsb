@@ -85,7 +85,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         primitive.dimensions.resize(3);
         primitive.dimensions[0] = xMax - xMin;
         primitive.dimensions[1] = yMax - yMin;
-        primitive.dimensions[2] = 0.04;
+        primitive.dimensions[2] = 0.01;
 
 
         geometry_msgs::PoseStamped poseOld;
