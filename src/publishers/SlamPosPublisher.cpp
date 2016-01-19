@@ -106,11 +106,14 @@ void SlamPosPublisher::convertPoseToPositionData(
 	positionData->mutable_translation()->set_x(pose.position.x);
 	positionData->mutable_translation()->set_y(pose.position.y);
 	positionData->mutable_translation()->set_z(pose.position.z);
+	positionData->mutable_translation()->set_frame_id("/map");
 
 	positionData->mutable_rotation()->set_qx(pose.orientation.x);
 	positionData->mutable_rotation()->set_qy(pose.orientation.y);
 	positionData->mutable_rotation()->set_qz(pose.orientation.z);
 	positionData->mutable_rotation()->set_qw(pose.orientation.w);
+	positionData->mutable_rotation()->set_frame_id("/map");
+
 }
 
 geometry_msgs::Pose SlamPosPublisher::getPose() {
