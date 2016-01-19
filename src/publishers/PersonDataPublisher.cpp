@@ -98,7 +98,7 @@ void PersonDataPublisher::callback(
 	  p->mutable_body()->mutable_location()->set_x(pTmp.position.x);
 	  p->mutable_body()->mutable_location()->set_y(pTmp.position.y);
 	  p->mutable_body()->mutable_location()->set_z(0);
-	  p->mutable_body()->mutable_location()->set_frame_id("map");
+	  p->mutable_body()->mutable_location()->set_frame_id("/map");
 	  
 	  //ProbPos oPos;
 	  //pTmp->getPersGlobalOrientation(oPos);
@@ -108,6 +108,7 @@ void PersonDataPublisher::callback(
 	  p->mutable_body()->mutable_orientation()->set_qy(0);
 	  p->mutable_body()->mutable_orientation()->set_qz(0);
 	  p->mutable_body()->mutable_orientation()->set_qw(1);
+	  p->mutable_body()->mutable_orientation()->set_frame_id("/map");
 
 	  p->mutable_face()->mutable_face()->mutable_region()->set_height(0);
 	  p->mutable_face()->mutable_face()->mutable_region()->set_width(0);
