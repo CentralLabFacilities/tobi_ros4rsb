@@ -42,8 +42,14 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     // create new collision objects
     vector<moveit_msgs::CollisionObject> surfaces;
 
+    moveit_msgs::CollisionObject surfaceBig;
+    geometry_msgs::PoseStamped poseBig;
+    shape_msgs::SolidPrimitive primitiveBig;
+    double yBig, xBig, zBig, yMaxB, yMinB;
+    yBig = xBig = zBig = yMaxB = yMinB = 0;
     int numPatches = input->patches_size();
     ROS_DEBUG_STREAM("CollisionSurfaceListener forwarding " << numPatches << " surfaces");
+
     for (size_t i = 0; i < numPatches; i++) {
         const ::rst::geometry::PolygonalPatch3D& patch = input->patches(i);
         stringstream ss;
@@ -54,6 +60,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         xMax = yMax = -numeric_limits<double>::max();
         double xMin, yMin;
         xMin = yMin = numeric_limits<double>::max();
+
+        //gets the z Coordinate to detect the highest and lowest plane
+        double zCoord = patch.base().translation().z();
 
         EigenSTL::vector_Vector3d vertices;
         int numBorder = patch.border_size();
@@ -74,12 +83,15 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         double xCenter = xMin + (xMax - xMin) / 2.0;
         double yCenter = yMin + (yMax - yMin) / 2.0;
 
+
+
         //convert
 //        shapes::Mesh* mesh = shapes::createMeshFromVertices(vertices);
 //        shape_msgs::Mesh mesh_msg;
 //        shapes::ShapeMsg shape_mesh_msg = mesh_msg;
 //        shapes::constructMsgFromShape(mesh,shape_mesh_msg);
 
+        //Transform of the Plane itself
         shape_msgs::SolidPrimitive primitive;
         primitive.type = primitive.BOX;
         primitive.dimensions.resize(3);
@@ -116,7 +128,91 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
 //        surface.meshes.push_back(mesh_msg);
 
         surfaces.push_back(surface);
+
+        //the important data for the biggest surface is stored.
+        if((abs(yMax - yMin)) > yBig){
+          yBig = abs(yMax - yMin);
+          xBig = abs(xMax - xMin);
+          zBig = zCoord;
+          yMaxB = yMax;
+          yMinB = yMin;
+          surfaceBig = surface;
+          primitiveBig = primitive;
+          poseBig = poseNew;
+        }
+        //primitive is reused and parameters for left plane are used
+        /*primitive.dimensions[0] =  xMax - xMin; //length
+        primitive.dimensions[1] =  0.01; //depth
+        primitive.dimensions[2] =  zCoord;//height
+
+        moveit_msgs::CollisionObject surfaceLeft;
+        surfaceLeft.header.frame_id = poseNew.header.frame_id;
+        surfaceLeft.id = ss.str() + "left";
+        surfaceLeft.operation = surface.ADD;
+        surfaceLeft.primitive_poses.push_back(poseNew.pose);
+        surfaceLeft.primitives.push_back(primitive);
+        surfaceLeft.primitive_poses[0].position.x = surface.primitive_poses[0].position.x;
+        surfaceLeft.primitive_poses[0].position.y = yMin;
+        surfaceLeft.primitive_poses[0].position.z = surface.primitive_poses[0].position.z / 2;
+
+        surfaces.push_back(surfaceLeft);
+
+        //Transform of the right plane that is created; for comments look at leftplane
+        primitive.dimensions[0] =  xMax - xMin; //length
+        primitive.dimensions[1] =  0.01; //depth
+        primitive.dimensions[2] =  zCoord;//height
+
+        moveit_msgs::CollisionObject surfaceRight;
+        surfaceRight.header.frame_id = poseNew.header.frame_id;
+        surfaceRight.id = ss.str() + "right";
+        surfaceRight.operation = surface.ADD;
+        surfaceRight.primitive_poses.push_back(poseNew.pose);
+        surfaceRight.primitives.push_back(primitive);
+        surfaceRight.primitive_poses[0].position.x = surface.primitive_poses[0].position.x;
+        surfaceRight.primitive_poses[0].position.y = yMax;
+        surfaceRight.primitive_poses[0].position.z = surface.primitive_poses[0].position.z / 2;
+
+        surfaces.push_back(surfaceRight);*/
     }
+
+    if(numPatches > 1){
+      zBig = 3.00;
+    }
+
+    //primitive is reused and parameters for left plane are used
+    primitiveBig.dimensions[0] =  xBig; //length
+    primitiveBig.dimensions[1] =  0.01; //depth
+    primitiveBig.dimensions[2] =  zBig;//height
+
+    moveit_msgs::CollisionObject surfaceLeft;
+    surfaceLeft.header.frame_id = poseBig.header.frame_id;
+    surfaceLeft.id = "surfaceBigLeft";
+    surfaceLeft.operation = surfaceBig.ADD;
+    surfaceLeft.primitive_poses.push_back(poseBig.pose);
+    surfaceLeft.primitives.push_back(primitiveBig);
+    surfaceLeft.primitive_poses[0].position.x = surfaceBig.primitive_poses[0].position.x;
+    surfaceLeft.primitive_poses[0].position.y = yMinB;
+    surfaceLeft.primitive_poses[0].position.z = surfaceBig.primitive_poses[0].position.z / 2;
+
+    surfaces.push_back(surfaceLeft);
+
+    //Transform of the right plane that is created; for comments look at leftplane
+    primitiveBig.dimensions[0] =  xBig; //length
+    primitiveBig.dimensions[1] =  0.01; //depth
+    primitiveBig.dimensions[2] =  zBig;//height
+
+    moveit_msgs::CollisionObject surfaceRight;
+    surfaceRight.header.frame_id = poseBig.header.frame_id;
+    surfaceRight.id = "surfaceBigRight";
+    surfaceRight.operation = surfaceBig.ADD;
+    surfaceRight.primitive_poses.push_back(poseBig.pose);
+    surfaceRight.primitives.push_back(primitiveBig);
+    surfaceRight.primitive_poses[0].position.x = surfaceBig.primitive_poses[0].position.x;
+    surfaceRight.primitive_poses[0].position.y = yMaxB;
+    surfaceRight.primitive_poses[0].position.z = surfaceBig.primitive_poses[0].position.z / 2;
+
+    surfaces.push_back(surfaceRight);
+
     sceneInterface.addCollisionObjects(surfaces);
 }
 
