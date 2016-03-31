@@ -99,6 +99,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         primitive.dimensions[1] = yMax - yMin;
         primitive.dimensions[2] = 0.01;
 
+        if(numPatches > 1){
+          primitive.dimensions[1] = 1.3;
+        }
 
         geometry_msgs::PoseStamped poseOld;
         poseOld.pose.position.x = patch.base().translation().x();
@@ -140,39 +143,6 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
           primitiveBig = primitive;
           poseBig = poseNew;
         }
-        //primitive is reused and parameters for left plane are used
-        /*primitive.dimensions[0] =  xMax - xMin; //length
-        primitive.dimensions[1] =  0.01; //depth
-        primitive.dimensions[2] =  zCoord;//height
-
-        moveit_msgs::CollisionObject surfaceLeft;
-        surfaceLeft.header.frame_id = poseNew.header.frame_id;
-        surfaceLeft.id = ss.str() + "left";
-        surfaceLeft.operation = surface.ADD;
-        surfaceLeft.primitive_poses.push_back(poseNew.pose);
-        surfaceLeft.primitives.push_back(primitive);
-        surfaceLeft.primitive_poses[0].position.x = surface.primitive_poses[0].position.x;
-        surfaceLeft.primitive_poses[0].position.y = yMin;
-        surfaceLeft.primitive_poses[0].position.z = surface.primitive_poses[0].position.z / 2;
-
-        surfaces.push_back(surfaceLeft);
-
-        //Transform of the right plane that is created; for comments look at leftplane
-        primitive.dimensions[0] =  xMax - xMin; //length
-        primitive.dimensions[1] =  0.01; //depth
-        primitive.dimensions[2] =  zCoord;//height
-
-        moveit_msgs::CollisionObject surfaceRight;
-        surfaceRight.header.frame_id = poseNew.header.frame_id;
-        surfaceRight.id = ss.str() + "right";
-        surfaceRight.operation = surface.ADD;
-        surfaceRight.primitive_poses.push_back(poseNew.pose);
-        surfaceRight.primitives.push_back(primitive);
-        surfaceRight.primitive_poses[0].position.x = surface.primitive_poses[0].position.x;
-        surfaceRight.primitive_poses[0].position.y = yMax;
-        surfaceRight.primitive_poses[0].position.z = surface.primitive_poses[0].position.z / 2;
-
-        surfaces.push_back(surfaceRight);*/
     }
 
     if(numPatches > 1){
