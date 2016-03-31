@@ -439,9 +439,9 @@ shared_ptr<int64_t> NavigationServer::getCostGlobal(shared_ptr<CoordinateCommand
     unsigned int mapY;
     if (!costmap->costmap->worldToMap(coor->mutable_goal()->mutable_translation()->x(),
             coor->mutable_goal()->mutable_translation()->y(), mapX, mapY)) {
-        ROS_INFO_STREAM("Error: request get cost for out of costmap coord!!! -> return no costs (X: "
+        ROS_INFO_STREAM("Error: request get cost for out of costmap coord!!! -> return HIGH costs (X: "
                 << mapX << ",Y:" << mapY);
-        shared_ptr<int64_t> costPtr(new int64_t((int64_t) 0));
+        shared_ptr<int64_t> costPtr(new int64_t((int64_t) 99));
         return costPtr;
     }
     unsigned char cost = costmap->costmap->getCost(mapX, mapY);
