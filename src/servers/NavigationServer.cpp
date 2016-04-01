@@ -317,7 +317,7 @@ shared_ptr<CommandResult> NavigationServer::navigateTo(shared_ptr<CoordinateComm
 
 shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand> coor,
         bool relative) {
-    ROS_INFO("call move\n");
+    ROS_INFO_STREAM("called move, relative:" << relative);
     stop();
     if (!relative) {
         ROS_INFO("fail not impl");
@@ -327,11 +327,9 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
         return result;
     }
     move_base::MoveBaseConfig move_base_config;
-    //TODO: setAcceleration
-    //TODO: use theta acceleration instead of velocity
     double v_theta;
-    if (coor->has_motion_parameters() && coor->motion_parameters().has_max_velocity()) {
-        v_theta = coor->motion_parameters().max_velocity();
+	if (coor->has_motion_parameters() && coor->motion_parameters().has_max_acceleration) {
+		v_theta = coor->motion_parameters().max_acceleration();
     } else {
         v_theta = this->defaultTurnSpeed;
     }
