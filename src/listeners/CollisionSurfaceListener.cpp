@@ -42,8 +42,14 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     // create new collision objects
     vector<moveit_msgs::CollisionObject> surfaces;
 
+    moveit_msgs::CollisionObject surfaceBig;
+    geometry_msgs::PoseStamped poseBig;
+    shape_msgs::SolidPrimitive primitiveBig;
+    double yBig, xBig, zBig, yMaxB, yMinB;
+    yBig = xBig = zBig = yMaxB = yMinB = 0;
     int numPatches = input->patches_size();
     ROS_DEBUG_STREAM("CollisionSurfaceListener forwarding " << numPatches << " surfaces");
+
     for (size_t i = 0; i < numPatches; i++) {
         const ::rst::geometry::PolygonalPatch3D& patch = input->patches(i);
         stringstream ss;
@@ -54,6 +60,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         xMax = yMax = -numeric_limits<double>::max();
         double xMin, yMin;
         xMin = yMin = numeric_limits<double>::max();
+
+        //gets the z Coordinate to detect the highest and lowest plane
+        double zCoord = patch.base().translation().z();
 
         EigenSTL::vector_Vector3d vertices;
         int numBorder = patch.border_size();
@@ -74,12 +83,15 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         double xCenter = xMin + (xMax - xMin) / 2.0;
         double yCenter = yMin + (yMax - yMin) / 2.0;
 
+
+
         //convert
 //        shapes::Mesh* mesh = shapes::createMeshFromVertices(vertices);
 //        shape_msgs::Mesh mesh_msg;
 //        shapes::ShapeMsg shape_mesh_msg = mesh_msg;
 //        shapes::constructMsgFromShape(mesh,shape_mesh_msg);
 
+        //Transform of the Plane itself
         shape_msgs::SolidPrimitive primitive;
         primitive.type = primitive.BOX;
         primitive.dimensions.resize(3);
@@ -87,6 +99,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         primitive.dimensions[1] = yMax - yMin;
         primitive.dimensions[2] = 0.01;
 
+        if(numPatches > 1){
+          primitive.dimensions[1] = 1.3;
+        }
 
         geometry_msgs::PoseStamped poseOld;
         poseOld.pose.position.x = patch.base().translation().x();
@@ -116,7 +131,58 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
 //        surface.meshes.push_back(mesh_msg);
 
         surfaces.push_back(surface);
+
+        //the important data for the biggest surface is stored.
+        if((abs(yMax - yMin)) > yBig){
+          yBig = abs(yMax - yMin);
+          xBig = abs(xMax - xMin);
+          zBig = zCoord;
+          yMaxB = yMax;
+          yMinB = yMin;
+          surfaceBig = surface;
+          primitiveBig = primitive;
+          poseBig = poseNew;
+        }
     }
+
+    if(numPatches > 1){
+      zBig = 3.00;
+    }
+
+    //primitive is reused and parameters for left plane are used
+    primitiveBig.dimensions[0] =  xBig; //length
+    primitiveBig.dimensions[1] =  0.01; //depth
+    primitiveBig.dimensions[2] =  zBig;//height
+
+    moveit_msgs::CollisionObject surfaceLeft;
+    surfaceLeft.header.frame_id = poseBig.header.frame_id;
+    surfaceLeft.id = "surfaceBigLeft";
+    surfaceLeft.operation = surfaceBig.ADD;
+    surfaceLeft.primitive_poses.push_back(poseBig.pose);
+    surfaceLeft.primitives.push_back(primitiveBig);
+    surfaceLeft.primitive_poses[0].position.x = surfaceBig.primitive_poses[0].position.x;
+    surfaceLeft.primitive_poses[0].position.y = yMinB;
+    surfaceLeft.primitive_poses[0].position.z = surfaceBig.primitive_poses[0].position.z / 2;
+
+    surfaces.push_back(surfaceLeft);
+
+    //Transform of the right plane that is created; for comments look at leftplane
+    primitiveBig.dimensions[0] =  xBig; //length
+    primitiveBig.dimensions[1] =  0.01; //depth
+    primitiveBig.dimensions[2] =  zBig;//height
+
+    moveit_msgs::CollisionObject surfaceRight;
+    surfaceRight.header.frame_id = poseBig.header.frame_id;
+    surfaceRight.id = "surfaceBigRight";
+    surfaceRight.operation = surfaceBig.ADD;
+    surfaceRight.primitive_poses.push_back(poseBig.pose);
+    surfaceRight.primitives.push_back(primitiveBig);
+    surfaceRight.primitive_poses[0].position.x = surfaceBig.primitive_poses[0].position.x;
+    surfaceRight.primitive_poses[0].position.y = yMaxB;
+    surfaceRight.primitive_poses[0].position.z = surfaceBig.primitive_poses[0].position.z / 2;
+
+    surfaces.push_back(surfaceRight);
+
     sceneInterface.addCollisionObjects(surfaces);
 }
 
