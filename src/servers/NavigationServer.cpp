@@ -329,7 +329,7 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
     }
     move_base::MoveBaseConfig move_base_config;
     double v_theta;
-	if (coor->has_motion_parameters() && coor->motion_parameters().has_max_acceleration) {
+	if (coor->has_motion_parameters() && coor->motion_parameters().has_max_acceleration()) {
 		v_theta = coor->motion_parameters().max_acceleration();
     } else {
         v_theta = this->defaultTurnSpeed;
