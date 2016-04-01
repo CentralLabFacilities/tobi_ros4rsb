@@ -16,8 +16,10 @@ VelocityCommander::VelocityCommander(std::string name, ros::NodeHandle node) {
 }
 
 void VelocityCommander::stop() {
+	boost::mutex::scoped_lock lock(mutex);
     if (running)
         should_stop = true;
+	while(running);
 }
 
 bool VelocityCommander::isRunning() {

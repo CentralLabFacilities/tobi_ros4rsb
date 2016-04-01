@@ -256,6 +256,7 @@ void NavigationServer::stop() {
     } else {
         ROS_WARN("called stop but there is no goal running? stopping velocity commander");
         this->velocityCommander->stop();
+		usleep(100);
 
     }
     ROS_INFO("called stop\n");
@@ -348,8 +349,8 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
     ROS_INFO("before turn\n");
     ExitStatus status = this->velocityCommander->turn(yaw, v_theta);
     ROS_INFO("after turn\n");
-    ROS_INFO("before drive\n");
-    if (status == SUCCESS) {
+	if (status == SUCCESS && coor->mutable_goal()->mutable_translation()->x() > 0) {
+		ROS_INFO("before drive\n");
         status = this->velocityCommander->drive(coor->mutable_goal()->mutable_translation()->x(),
                 v_x);
     }
