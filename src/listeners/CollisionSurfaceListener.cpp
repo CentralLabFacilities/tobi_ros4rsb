@@ -50,6 +50,10 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     int numPatches = input->patches_size();
     ROS_DEBUG_STREAM("CollisionSurfaceListener forwarding " << numPatches << " surfaces");
 
+    if(numPatches < 1) {
+        return;
+    }
+
     for (size_t i = 0; i < numPatches; i++) {
         const ::rst::geometry::PolygonalPatch3D& patch = input->patches(i);
         stringstream ss;
