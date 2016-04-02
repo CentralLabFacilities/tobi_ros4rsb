@@ -256,7 +256,7 @@ void NavigationServer::stop() {
     } else {
         ROS_WARN("called stop but there is no goal running? stopping velocity commander");
         this->velocityCommander->stop();
-		usleep(100);
+		usleep(500);
 
     }
     ROS_INFO("called stop\n");
@@ -379,7 +379,7 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
         result->set_code(status);
         result->set_description("see error code");
     }
-    ROS_INFO("called move\n");
+    ROS_INFO("move finished\n");
     return result;
 }
 

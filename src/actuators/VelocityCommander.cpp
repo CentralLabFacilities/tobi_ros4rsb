@@ -19,7 +19,10 @@ void VelocityCommander::stop() {
 	boost::mutex::scoped_lock lock(mutex);
     if (running)
         should_stop = true;
-	while(running);
+	while(running) {
+		usleep(100);
+	}
+
 }
 
 bool VelocityCommander::isRunning() {
@@ -32,7 +35,9 @@ void VelocityCommander::killRunningAndSet() {
     if (running) {
         kill = true;
     }
-    while(running);
+    while(running) {
+		usleep(100);
+	}
     running = true;
     printf("now we can start\n");
 }
