@@ -73,6 +73,7 @@ public:
         this->server = server;
     }
     shared_ptr<CommandResult> call(const std::string&, shared_ptr<CoordinateCommand> input) {
+	ROS_INFO("CALLBACK: MoveRelative called");
         return server->moveTo(input, true);
     }
 };
@@ -318,7 +319,8 @@ shared_ptr<CommandResult> NavigationServer::navigateTo(shared_ptr<CoordinateComm
 
 shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand> coor,
         bool relative) {
-    ROS_INFO_STREAM("called move, relative:" << relative);
+    ROS_INFO_STREAM("called moveTo, relative:" << relative);
+    ROS_INFO_STREAM("coor:" << coor);
     stop();
     if (!relative) {
         ROS_INFO("fail not impl");
@@ -346,15 +348,15 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
     tf::Matrix3x3(q).getEulerYPR(yaw, pitch, roll);
     ROS_INFO_STREAM("yaw: " << yaw << ",pitch: " << pitch << ",roll: " << roll);
     //our angle is pitch its around y axis
-    ROS_INFO("before turn\n");
+    ROS_INFO("moveTo: before turn\n");
     ExitStatus status = this->velocityCommander->turn(yaw, v_theta);
-    ROS_INFO("after turn\n");
-	if (status == SUCCESS && coor->mutable_goal()->mutable_translation()->x() > 0) {
+    ROS_INFO("moveTo: after turn\n");
+	if (status == SUCCESS && coor->mutable_goal()->mutable_translation()->x() != 0) {
 		ROS_INFO("before drive\n");
         status = this->velocityCommander->drive(coor->mutable_goal()->mutable_translation()->x(),
                 v_x);
     }
-    ROS_INFO("after drive\n");
+    ROS_INFO("moveTo: after drive\n");
     shared_ptr<CommandResult> result(new CommandResult());
     switch (status) {
     case CANCELLED:
@@ -379,7 +381,7 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
         result->set_code(status);
         result->set_description("see error code");
     }
-    ROS_INFO("move finished\n");
+    ROS_INFO("moveTo:  finished\n");
     return result;
 }
 
