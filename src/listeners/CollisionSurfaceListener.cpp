@@ -102,7 +102,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         primitive.dimensions[0] = xMax - xMin;
         primitive.dimensions[1] = yMax - yMin;
         primitive.dimensions[2] = 0.01;
-
+	
         if(numPatches > 1){
           primitive.dimensions[1] = 1.3;
         }
@@ -110,7 +110,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         geometry_msgs::PoseStamped poseOld;
         poseOld.pose.position.x = patch.base().translation().x();
         poseOld.pose.position.y = patch.base().translation().y();
-        poseOld.pose.position.z = patch.base().translation().z();
+        poseOld.pose.position.z = patch.base().translation().z() - ( primitive.dimensions[2] / 2);
         poseOld.pose.orientation.w = patch.base().rotation().qw();
         poseOld.pose.orientation.x = patch.base().rotation().qx();
         poseOld.pose.orientation.y = patch.base().rotation().qy();
