@@ -101,7 +101,8 @@ set(SOURCES src/ros4rsb.cpp
             src/servers/Costmap.cpp
             src/servers/NavigationServer.cpp
             src/util/TransformerTF.cpp
-            )
+            src/servers/ControllerServer.cpp
+        )
 
 add_executable(ros4rsb ${SOURCES})
 target_link_libraries(ros4rsb ${RSC_LIBRARIES} ${RSB_LIBRARIES} ${RST_LIBRARIES} ${catkin_LIBRARIES})

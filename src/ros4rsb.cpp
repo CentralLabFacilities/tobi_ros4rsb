@@ -14,6 +14,7 @@
 #include "listeners/CollisionBoxListener.h"
 #include "listeners/CollisionSurfaceListener.h"
 #include "servers/NavigationServer.h"
+#include "servers/ControllerServer.h"
 #include <ros/ros.h>
 #include <ros/param.h>
 #include <rsb/Exception.h>
@@ -48,6 +49,7 @@ int main(int argc, char **argv) {
 
     // register servers
     serverBuilders.push_back(ServerBuilder::Ptr(new NavigationServer::Builder("NavigationServer")));
+    serverBuilders.push_back(ServerBuilder::Ptr(new ControllerServer::Builder("ControllerServer")));
 
     ros::NodeHandle n("~");
 
