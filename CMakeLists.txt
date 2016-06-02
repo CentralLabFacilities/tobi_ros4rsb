@@ -105,7 +105,8 @@ set(SOURCES src/ros4rsb.cpp
         )
 
 add_executable(ros4rsb ${SOURCES})
-target_compile_features(ros4rsb PRIVATE cxx_range_for)
+#target_compile_features(ros4rsb PRIVATE cxx_range_for)
+add_definitions(-std=gnu++0x)
 target_link_libraries(ros4rsb ${RSC_LIBRARIES} ${RSB_LIBRARIES} ${RST_LIBRARIES} ${catkin_LIBRARIES})
 
 install(TARGETS ${PROJECT_NAME}
