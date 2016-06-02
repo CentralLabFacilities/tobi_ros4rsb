@@ -6,7 +6,10 @@
 
 //RSB
 #include <rsb/Factory.h>
+#include <rst/generic/Dictionary.pb.h>
 
+typedef rst::generic::Dictionary Dict;
+typedef rst::generic::KeyValuePair Kvp;
 
 namespace ros4rsb {
 
@@ -22,6 +25,31 @@ namespace ros4rsb {
         }
     };
 
+    class HeadCb : public rsb::patterns::LocalServer::Callback<Dict, bool> {
+        ControllerServer *server;
+    public:
+        HeadCb(ControllerServer *server) {
+            this->server = server;
+        }
+
+        boost::shared_ptr<bool> call(const std::string &, boost::shared_ptr<Dict> input) {
+            float j0, j1;
+            Dict in = *input;
+
+            ROS_DEBUG_STREAM("got head input");
+            in.PrintDebugString();
+
+            for (Kvp kv : in.entries()) {
+                if (kv.key() == "j0") {
+                    j0 = kv.value().double_();
+                } else {
+                    j1 = kv.value().double_();
+                }
+            }
+            return boost::make_shared<bool>(server->headGoto(j0, j1));
+        }
+    };
+
     ControllerServer::ControllerServer(const std::string &name, ros::NodeHandle &node) {
         this->name = name;
         this->node = node;
@@ -32,14 +60,19 @@ namespace ros4rsb {
         zliftClient = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>(
                 "/meka_roscontrol/zlift_position_trajectory_controller/follow_joint_trajectory", true);
 
-        ROS_INFO("waiting for zlift action server...");
+        headClient = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>(
+                "/meka_roscontrol/head_position_trajectory_controller/follow_joint_trajectory", true);
+
+        ROS_INFO("waiting for ros_control action server...");
         for (int attempt = 0; attempt < 5; attempt++) {
             if (!zliftClient->waitForServer(ros::Duration(5.0))) {
                 ROS_WARN("zlift action server is not present yet");
-            } else {
-                break;
+            }
+            if (!headClient->waitForServer(ros::Duration(5.0))) {
+                ROS_WARN("head action server is not present yet");
             }
         }
+
         if (zliftClient->isServerConnected()) {
             ROS_INFO("zlift action server ready");
         } else {
@@ -47,11 +80,25 @@ namespace ros4rsb {
             throw ros::Exception("zlift action server failed to connect!");
         }
 
+        if (headClient->isServerConnected()) {
+            ROS_INFO("head action server ready");
+        } else {
+            ROS_FATAL("head action server failed to connect!");
+            throw ros::Exception("head action server failed to connect!");
+        }
+
         rsb::Factory &factory = rsb::getFactory();
+        boost::shared_ptr<rsb::converter::ProtocolBufferConverter<Dict> > converter(
+                new rsb::converter::ProtocolBufferConverter<Dict>());
+
+        rsb::converter::converterRepository<std::string>()->registerConverter(converter);
+
+
         server = factory.createLocalServer(this->name);
 
         ROS_INFO_STREAM("Server name: " << name);
-        server->registerMethod("goTo", rsb::patterns::LocalServer::CallbackPtr(new ZliftCb(this)));
+        server->registerMethod("setZliftPosition", rsb::patterns::LocalServer::CallbackPtr(new ZliftCb(this)));
+        server->registerMethod("setHeadAngles", rsb::patterns::LocalServer::CallbackPtr(new ZliftCb(this)));
         ROS_INFO("registered all methods\n");
 
     }
@@ -81,6 +128,34 @@ namespace ros4rsb {
             return false;
         }
 
+    }
+
+    bool ControllerServer::headGoto(float j0, float j1) {
+        control_msgs::FollowJointTrajectoryGoal goal;
+
+        goal.trajectory.joint_names.push_back("head_j0");
+        goal.trajectory.joint_names.push_back("head_j1");
+
+        trajectory_msgs::JointTrajectoryPoint p0;
+        p0.positions.push_back(j0);
+        goal.trajectory.points.push_back(p0);
+
+        trajectory_msgs::JointTrajectoryPoint p1;
+        p1.positions.push_back(j1);
+        goal.trajectory.points.push_back(p1);
+
+
+        headClient->sendGoal(goal);
+        bool finished_before_timeout = headClient->waitForResult(ros::Duration(30.0));
+
+        if (finished_before_timeout) {
+            actionlib::SimpleClientGoalState state = headClient->getState();
+            ROS_INFO("Action finished: %s", state.toString().c_str());
+            return state.state_ == state.SUCCEEDED;
+        } else {
+            ROS_INFO("Action did not finish before the time out.");
+            return false;
+        }
     }
 
 
