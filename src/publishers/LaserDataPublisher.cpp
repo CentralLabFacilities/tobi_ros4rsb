@@ -8,13 +8,12 @@
 #include "LaserDataPublisher.h"
 #include <rsb/MetaData.h>
 
-using namespace std;
 using namespace boost;
 using namespace rst;
 
 namespace ros4rsb {
 
-LaserDataPublisher::LaserDataPublisher(const string &topicIn,string name, ros::NodeHandle node) :
+LaserDataPublisher::LaserDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node) :
 		PublisherImpl(name, node), dataAvailable(false) {
 
     node.param<bool>("isInterleavedLaserData", isInterleavedMode, true);
@@ -82,7 +81,7 @@ void LaserDataPublisher::callback(
 	shared_ptr<vision::LaserScan> data = shared_ptr<vision::LaserScan>(new vision::LaserScan());
 	data->set_scan_angle(abs(message->angle_max - message->angle_min));
 
-	for (vector<float>::iterator it = ranges.begin(); it != ranges.end(); ++it) {
+	for (std::vector<float>::iterator it = ranges.begin(); it != ranges.end(); ++it) {
 		float* d = data->mutable_scan_values()->Add();
 		*d = *it;
 	}

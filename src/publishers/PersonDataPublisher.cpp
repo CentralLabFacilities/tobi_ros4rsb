@@ -16,13 +16,13 @@
 #include <boost/uuid/name_generator.hpp>
 #include <boost/uuid/random_generator.hpp>
 
-using namespace std;
+
 using namespace boost;
 using namespace rst;
 
 namespace ros4rsb {
 
-PersonDataPublisher::PersonDataPublisher(const string &topicIn,string name, ros::NodeHandle node) :
+PersonDataPublisher::PersonDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node) :
 		PublisherImpl(name, node), dataAvailable(false) {
 
 	function<void(const people_msgs::People::ConstPtr&)> m0 = bind(

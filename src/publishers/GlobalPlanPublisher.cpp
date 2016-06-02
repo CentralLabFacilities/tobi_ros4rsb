@@ -9,14 +9,14 @@
 
 #define WAYPOINTS_PER_MESSAGE 10
 
-using namespace std;
+
 using namespace ros;
 using namespace boost;
 using namespace rst;
 
 namespace ros4rsb {
 
-GlobalPlanPublisher::GlobalPlanPublisher(const string &topicIn,string name, NodeHandle node) :
+GlobalPlanPublisher::GlobalPlanPublisher(const std::string &topicIn,std::string name, NodeHandle node) :
         PublisherImpl(name, node) {
 
 	function<void(const nav_msgs::PathConstPtr&)> m0 = bind(
@@ -46,7 +46,7 @@ void GlobalPlanPublisher::callback(const nav_msgs::PathConstPtr &message) {
 	// create RST type
 	shared_ptr<navigation::Path> globalPlan = shared_ptr<navigation::Path>(new navigation::Path());
 
-	cout << "Iterating..." << endl;
+	std::cout << "Iterating..." << std::endl;
 
 	// skip some points for efficiency
 	unsigned int step = message->poses.size() / WAYPOINTS_PER_MESSAGE;

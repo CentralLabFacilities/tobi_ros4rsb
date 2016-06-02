@@ -7,7 +7,6 @@
 
 #include "StallDataPublisher.h"
 
-using namespace std;
 using namespace ros;
 using namespace boost;
 
@@ -17,7 +16,7 @@ using namespace boost;
 
 namespace ros4rsb {
     
-    StallDataPublisher::StallDataPublisher(const string &topicIn,string name, NodeHandle node) :
+    StallDataPublisher::StallDataPublisher(const std::string &topicIn,std::string name, NodeHandle node) :
         PublisherImpl(name, node) {
 
         function<void(const diagnostic_msgs::DiagnosticArray::ConstPtr&) > m0 = bind(

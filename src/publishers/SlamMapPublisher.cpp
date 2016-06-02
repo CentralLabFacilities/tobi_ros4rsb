@@ -11,14 +11,13 @@
 #include <tf2/LinearMath/Matrix3x3.h>
 
 
-using namespace std;
 using namespace ros;
 using namespace boost;
 using namespace rst;
 
 namespace ros4rsb {
 
-    SlamMapPublisher::SlamMapPublisher(const string &topicIn,const string &name, ros::NodeHandle &node) :
+    SlamMapPublisher::SlamMapPublisher(const std::string &topicIn,const std::string &name, ros::NodeHandle &node) :
         PublisherImpl(name, node),
     hasData(false) {
 
@@ -61,7 +60,7 @@ namespace ros4rsb {
     void SlamMapPublisher::callback(
             const nav_msgs::OccupancyGrid::ConstPtr &message) {
 
-        vector<int8_t> ints;
+        std::vector<int8_t> ints;
 
 
         shared_ptr<navigation::OccupancyGrid2DInt> data(new navigation::OccupancyGrid2DInt());
