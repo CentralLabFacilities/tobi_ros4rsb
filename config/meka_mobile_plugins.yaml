@@ -41,5 +41,5 @@ server_list:
     scope: /nav_server
     topic: $$$ignored$$$
   - name: ControllerServer
-    scope: /meka/joint_control
-    topic: $$$ignored$$$
+    scope: /ros4rsb/ros_control # rsp scope
+    topic: $$$ignored$$$ #

@@ -27,6 +27,7 @@ namespace ros4rsb {
         ~ControllerServer();
 
         bool zliftGoto(float in);
+        bool headGoto(float j0, float j1);
 
         CREATE_SERVER_BUILDER_NESTED(ControllerServer)
 
@@ -35,6 +36,7 @@ namespace ros4rsb {
         ros::NodeHandle node;
 
         actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *zliftClient;
+        actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> *headClient;
 
         rsb::patterns::LocalServerPtr server;
 
