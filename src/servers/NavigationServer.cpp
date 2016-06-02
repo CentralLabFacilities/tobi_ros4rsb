@@ -16,7 +16,6 @@
 #define WAYPOINTS_PER_MESSAGE 10
 
 using namespace boost;
-using namespace std;
 using namespace ros;
 using namespace tf;
 using namespace rsb;
@@ -60,8 +59,8 @@ public:
     ReconfigureNodeCb(NavigationServer *server) {
         this->server = server;
     }
-    shared_ptr<CommandResult> call(const std::string&, shared_ptr<KeyValuePair> input) {
-        shared_ptr<string> tmp(new string("/move_base"));
+    boost::shared_ptr<CommandResult> call(const std::string&, shared_ptr<KeyValuePair> input) {
+        boost::shared_ptr<std::string> tmp(new std::string("/move_base"));
         return server->reconfigureNode(tmp, input);
     }
 };
@@ -201,14 +200,14 @@ NavigationServer::NavigationServer(const std::string &name, ros::NodeHandle &nod
     boost::shared_ptr<ProtocolBufferConverter<KeyValuePair> > converter2(
             new ProtocolBufferConverter<KeyValuePair>());
 
-    converterRepository<string>()->registerConverter(converter);
+    converterRepository<std::string>()->registerConverter(converter);
     converterRepository<std::string>()->registerConverter(converter1);
     converterRepository<std::string>()->registerConverter(converter2);
 
     //set parallel handler hack
     ParticipantConfig config = factory.getDefaultParticipantConfig();
     rsc::runtime::Properties &properties = config.mutableEventReceivingStrategy().mutableOptions();
-    properties.set<string>("parallelhandlercalls", "1");
+    properties.set<std::string>("parallelhandlercalls", "1");
 
     server = factory.createLocalServer(this->name, config); // config);
 
@@ -457,7 +456,7 @@ NavigationServer::~NavigationServer() {
     delete this->velocityCommander;
 }
 
-shared_ptr<CommandResult> NavigationServer::reconfigureNode(shared_ptr<string> node,
+shared_ptr<CommandResult> NavigationServer::reconfigureNode(shared_ptr<std::string> node,
         shared_ptr<KeyValuePair> key) {
     ROS_INFO_STREAM("call reconfigureNode with node=" << node << " key=" << key);
 
@@ -473,9 +472,9 @@ shared_ptr<CommandResult> NavigationServer::reconfigureNode(shared_ptr<string> n
     }
 }
 
-shared_ptr<CommandResult> NavigationServer::reconfigureBool(shared_ptr<string> nodeName,
+shared_ptr<CommandResult> NavigationServer::reconfigureBool(shared_ptr<std::string> nodeName,
         shared_ptr<KeyValuePair> key) {
-    string nodeID(nodeName->data());
+    std::string nodeID(nodeName->data());
     nodeID.append("/set_parameters");
     ros::ServiceClient nodeClient = this->node.serviceClient<dynamic_reconfigure::Reconfigure>(
             nodeID);
@@ -541,7 +540,7 @@ shared_ptr<CommandResult> NavigationServer::reconfigureBool(shared_ptr<string> n
 
 /* Currently unimplemented functions */
 
-void NavigationServer::deleteTarget(shared_ptr<string> target) {
+void NavigationServer::deleteTarget(shared_ptr<std::string> target) {
     ROS_INFO("call deleteTarget\n");
     ROS_INFO("called deleteTarget\n");
 }
@@ -559,7 +558,7 @@ shared_ptr<PlatformCapabilities> NavigationServer::getCapabilities() {
     return result;
 }
 
-void NavigationServer::trainTarget(shared_ptr<string> target) {
+void NavigationServer::trainTarget(shared_ptr<std::string> target) {
     ROS_INFO("call trainTarget\n");
     ROS_INFO("called trainTarget\n");
 }

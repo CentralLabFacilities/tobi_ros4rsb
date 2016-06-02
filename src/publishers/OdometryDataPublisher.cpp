@@ -10,14 +10,13 @@
 #include <tf2/LinearMath/Scalar.h>
 #include <rsb/MetaData.h>
 
-using namespace std;
 using namespace ros;
 using namespace boost;
 using namespace rst;
 
 namespace ros4rsb {
 
-    OdometryDataPublisher::OdometryDataPublisher(const string &topicIn,std::string name, ros::NodeHandle node) :
+    OdometryDataPublisher::OdometryDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node) :
         PublisherImpl(name, node) {
 
         function<void(const nav_msgs::Odometry::ConstPtr&) > m0 = bind(

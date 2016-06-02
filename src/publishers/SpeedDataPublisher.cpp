@@ -8,17 +8,16 @@
 #include "SpeedDataPublisher.h"
 #include <rsb/MetaData.h>
 
-using namespace std;
 using namespace ros;
 using namespace boost;
 using namespace rst;
 
 namespace ros4rsb {
 
-    SpeedDataPublisher::SpeedDataPublisher(const string &topicIn,string name, NodeHandle node) :
+    SpeedDataPublisher::SpeedDataPublisher(const std::string &topicIn,std::string name, NodeHandle node) :
         PublisherImpl(name, node) {
 
-        function<void(const nav_msgs::Odometry::ConstPtr&) > m0 = bind(
+        function<void(const nav_msgs::Odometry::ConstPtr&)> m0 = bind(
                 mem_fn(&SpeedDataPublisher::callback), this, _1);
 
         rosSubscriber = node.subscribe(topicIn, 1000, m0);

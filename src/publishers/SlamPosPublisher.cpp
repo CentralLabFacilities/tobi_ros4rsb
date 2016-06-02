@@ -12,14 +12,14 @@
 
 #include <rsb/MetaData.h>
 
-using namespace std;
+
 using namespace ros;
 using namespace rst::geometry;
 using namespace boost;
 
 namespace ros4rsb {
 
-SlamPosPublisher::SlamPosPublisher(const string &topicIn,string name, NodeHandle node) :
+SlamPosPublisher::SlamPosPublisher(const std::string &topicIn,std::string name, NodeHandle node) :
         PublisherImpl(name, node), hasData(false) {
 
     function<void(const nav_msgs::Odometry::ConstPtr&)> m1 = bind(

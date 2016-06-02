@@ -1,7 +1,6 @@
 #include "Costmap.h"
 
 using namespace boost;
-using namespace std;
 using namespace ros;
 using namespace tf;
 
@@ -11,8 +10,8 @@ namespace ros4rsb {
         this->node = node;
         function<void(const nav_msgs::OccupancyGrid::ConstPtr&)> m0 = bind(mem_fn(&Costmap::CostmapFullUpdate),this,_1);
         function<void(const nav_msgs::OccupancyGrid::ConstPtr&)> m1 = bind(mem_fn(&Costmap::CostmapPartialUpdate),this,_1);
-        string topicFullMessage = "/move_base/local_costmap/costmap";
-        string topicPartialMessage = "/move_base/local_costmap/costmap_update";
+        std::string topicFullMessage = "/move_base/local_costmap/costmap";
+        std::string topicPartialMessage = "/move_base/local_costmap/costmap_update";
         rosSubscriberFull = node.subscribe(topicFullMessage, 1000, m0);
         std::cout << name << " subscribed to topic: " << topicFullMessage << std::endl;
         rosSubscriberPartial = node.subscribe(topicPartialMessage, 1000, m1);
@@ -33,6 +32,6 @@ namespace ros4rsb {
     }
     
     void Costmap::CostmapPartialUpdate(const nav_msgs::OccupancyGridConstPtr &message){
-        std::cout << "got partial update" << endl;
+        std::cout << "got partial update" << std::endl;
     }
 }
