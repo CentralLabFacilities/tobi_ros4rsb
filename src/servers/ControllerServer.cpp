@@ -98,7 +98,7 @@ namespace ros4rsb {
 
         ROS_INFO_STREAM("Server name: " << name);
         server->registerMethod("setZliftPosition", rsb::patterns::LocalServer::CallbackPtr(new ZliftCb(this)));
-        server->registerMethod("setHeadAngles", rsb::patterns::LocalServer::CallbackPtr(new ZliftCb(this)));
+        server->registerMethod("setHeadAngles", rsb::patterns::LocalServer::CallbackPtr(new HeadCb(this)));
         ROS_INFO("registered all methods\n");
 
     }
