@@ -41,5 +41,5 @@ server_list:
     scope: /nav_server
     topic: $$$ignored$$$
   - name: ControllerServer
-    scope: /zlift_control
+    scope: /meka/joint_control
     topic: $$$ignored$$$

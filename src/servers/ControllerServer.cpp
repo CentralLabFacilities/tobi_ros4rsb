@@ -30,7 +30,7 @@ namespace ros4rsb {
 
         //tell the action client that we want to spin a thread by default
         zliftClient = new actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>(
-                "/meka_roscontrol/zlift_position_trajectory_controller", true);
+                "/meka_roscontrol/zlift_position_trajectory_controller/follow_joint_trajectory", true);
 
         ROS_INFO("waiting for zlift action server...");
         for (int attempt = 0; attempt < 5; attempt++) {
