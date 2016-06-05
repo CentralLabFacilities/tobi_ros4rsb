@@ -51,10 +51,10 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 MESSAGE(STATUS "Eigen: ${EIGEN3_INCLUDE_DIR}")
 
 # Try to find RSB and its components
-find_package(RSC 0.12 QUIET REQUIRED)
-find_package(RSB 0.12 QUIET REQUIRED)
-find_package(RST 0.12 QUIET REQUIRED COMPONENTS sandbox)
-find_package(rst-converters 0.12 QUIET REQUIRED)
+find_package(RSC 0.13 QUIET REQUIRED)
+find_package(RSB 0.13 QUIET REQUIRED)
+find_package(RST 0.13 QUIET REQUIRED COMPONENTS sandbox)
+find_package(rst-converters 0.13 QUIET REQUIRED)
 find_package(ProtocolBuffers QUIET REQUIRED)
 
 message(STATUS "RSC version: ${RSC_VERSION}")
