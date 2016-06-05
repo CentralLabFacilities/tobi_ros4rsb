@@ -114,6 +114,7 @@ namespace ros4rsb {
 
         trajectory_msgs::JointTrajectoryPoint point;
         point.positions.push_back(in);
+	point.time_from_start=ros::Duration(2.0); //TODO: make dependend on distance to move (in is only target not distance)
         goal.trajectory.points.push_back(point);
 
         zliftClient->sendGoal(goal);
