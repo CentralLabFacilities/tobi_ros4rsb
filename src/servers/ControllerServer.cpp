@@ -142,13 +142,9 @@ namespace ros4rsb {
 
         trajectory_msgs::JointTrajectoryPoint p0;
         p0.positions.push_back(j0);
+        p0.positions.push_back(j1);
         p0.time_from_start = ros::Duration(2.0);
         goal.trajectory.points.push_back(p0);
-
-        trajectory_msgs::JointTrajectoryPoint p1;
-        p1.positions.push_back(j1);
-        p1.time_from_start = ros::Duration(2.0);
-        goal.trajectory.points.push_back(p1);
 
 
         headClient->sendGoal(goal);
