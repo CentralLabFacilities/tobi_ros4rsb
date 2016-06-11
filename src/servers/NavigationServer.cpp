@@ -414,7 +414,24 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
         unsigned int step = ceil(srv.response.plan.poses.size() / WAYPOINTS_PER_MESSAGE);
         if (step == 0)
             ++step;
-        for (unsigned int i = 0; i < srv.response.plan.poses.size(); i += step) {
+        
+        unsigned int last = 0;
+        //use big steps up until end fo path to minimize message size
+        for (unsigned int i = 0; i < srv.response.plan.poses.size()-1; i += step) {
+            ROS_INFO_STREAM("loop " << i);
+            geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
+            rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
+            waypoint->mutable_translation()->set_x(pose.position.x);
+            waypoint->mutable_translation()->set_y(pose.position.y);
+            waypoint->mutable_translation()->set_z(pose.position.z);
+            waypoint->mutable_rotation()->set_qw(pose.orientation.w);
+            waypoint->mutable_rotation()->set_qx(pose.orientation.x);
+            waypoint->mutable_rotation()->set_qy(pose.orientation.y);
+            waypoint->mutable_rotation()->set_qz(pose.orientation.z);
+            last = i;
+        }
+        // use small step till end to have ending correct
+        for (unsigned int i = last; i < srv.response.plan.poses.size(); i += 1) {
             ROS_INFO_STREAM("loop " << i);
             geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
             rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
@@ -426,6 +443,7 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
             waypoint->mutable_rotation()->set_qy(pose.orientation.y);
             waypoint->mutable_rotation()->set_qz(pose.orientation.z);
         }
+        
         ROS_INFO_STREAM("got plan...");
     } else {
         ROS_INFO_STREAM("no plan...");
