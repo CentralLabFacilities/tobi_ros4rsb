@@ -45,7 +45,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     moveit_msgs::CollisionObject surfaceBig;
     moveit_msgs::CollisionObject surfaceHigh;
     geometry_msgs::PoseStamped poseBig;
+    geometry_msgs::PoseStamped poseHigh;
     shape_msgs::SolidPrimitive primitiveBig;
+    shape_msgs::SolidPrimitive primitiveHigh;
     double yBig, xBig, zBig, yMaxB, yMinB, zMax;
     yBig = xBig = zBig = yMaxB = yMinB = zMax= 0;
     int numPatches = input->patches_size();
@@ -149,10 +151,13 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
           poseBig = poseNew;
         }
         
+        
         //store highest plane
-        if(surface.pose.position.z() > zMax){
+        if(poseOld.position.z() > zMax){
             surfaceHigh = surface;
-            zMax = surface.pose.position.z();
+            poseHigh = poseNew;
+            primitiveHigh = primitive;
+            zMax = poseOld.position.z();
         }
     }
 
@@ -195,7 +200,15 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     surfaces.push_back(surfaceRight);
     
     //raise surface by 34cm
-    surfaceHigh.pose.position.z() += 0.34;
+    moveit_msgs::CollisionObject surfaceUpper;
+    surfaceUpper.header.frame_id = poseBig.header.frame_id;
+    surfaceUpper.id = "surfaceHigh";
+    surfaceUpper.operation = surfaceHigh.ADD;
+    surfaceUpper.primitive_poses.push_back(poseHigh.pose);
+    surfaceUpper.primitives.push_back(primitiveHigh);
+    surfaceUpper.primitive_poses[0].position.z += 0.34;
+
+    poseHigh.position.z() += 0.34;
     surfaces.push_back(surfaceHigh);
 
     sceneInterface.addCollisionObjects(surfaces);
