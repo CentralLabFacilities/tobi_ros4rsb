@@ -408,7 +408,7 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
             << srv.request.goal.pose.position.x << ",y=" << srv.request.goal.pose.position.y);
     shared_ptr<Path> path(new Path());
     ROS_INFO("calling getPlan...");
-    if (clientGetPlan.call(srv)) {
+    if (clientGetPlan.call(srv) &&  (srv.response.plan.poses.size() != 0)) {
         ROS_DEBUG_STREAM("a");
         // skip some points for efficiency
         unsigned int step = ceil(srv.response.plan.poses.size() / WAYPOINTS_PER_MESSAGE);
