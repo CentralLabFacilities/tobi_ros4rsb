@@ -409,12 +409,15 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
     shared_ptr<Path> path(new Path());
     ROS_INFO("calling getPlan...");
     if (clientGetPlan.call(srv)) {
+        ROS_DEBUG_STREAM("a");
         // skip some points for efficiency
         unsigned int step = ceil(srv.response.plan.poses.size() / WAYPOINTS_PER_MESSAGE);
+        ROS_DEBUG_STREAM("b");
         if (step == 0)
             ++step;
-        
+        ROS_DEBUG_STREAM("c");
         unsigned int last = 0;
+        ROS_DEBUG_STREAM("d");
         //use big steps up until end fo path to minimize message size
         for (unsigned int i = 0; i < srv.response.plan.poses.size()-1; i += step) {
             ROS_DEBUG_STREAM("1: loop " << i);
