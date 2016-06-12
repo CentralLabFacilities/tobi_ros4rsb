@@ -153,11 +153,11 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         
         
         //store highest plane
-        if(poseOld.pose.position.z > zMax){
+        if(poseNew.pose.position.z > zMax){
             surfaceHigh = surface;
             poseHigh = poseNew;
             primitiveHigh = primitive;
-            zMax = poseOld.pose.position.z0;
+            zMax = poseNew.pose.position.z;
         }
     }
 
