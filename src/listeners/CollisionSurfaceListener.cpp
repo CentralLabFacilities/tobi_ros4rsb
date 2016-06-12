@@ -157,7 +157,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
             surfaceHigh = surface;
             poseHigh = poseNew;
             primitiveHigh = primitive;
-            zMax = poseOld.pose.position.z;
+            zMax = poseOld.pose.position.z0;
         }
     }
 
@@ -199,6 +199,11 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
 
     surfaces.push_back(surfaceRight);
     
+    primitiveHigh.dimensions[0] =  surfaceHigh.primitives[0].dimensions[0];   //length
+    primitiveHigh.dimensions[1] =  surfaceHigh.primitives[0].dimensions[1];  //depth
+    primitiveHigh.dimensions[2] =  surfaceHigh.primitives[0].dimensions[2]; //height
+    
+    cout << "adding highest surface" << endl;
     //raise surface by 34cm
     moveit_msgs::CollisionObject surfaceUpper;
     surfaceUpper.header.frame_id = poseBig.header.frame_id;
@@ -206,7 +211,9 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     surfaceUpper.operation = surfaceHigh.ADD;
     surfaceUpper.primitive_poses.push_back(poseHigh.pose);
     surfaceUpper.primitives.push_back(primitiveHigh);
-    surfaceUpper.primitive_poses[0].position.z += 0.34;
+    surfaceUpper.primitive_poses[0].position.x = surfaceHigh.primitive_poses[0].position.x;
+    surfaceUpper.primitive_poses[0].position.y = surfaceHigh.primitive_poses[0].position.y;
+    surfaceUpper.primitive_poses[0].position.z = surfaceHigh.primitive_poses[0].position.z + 0.34;
 
     surfaces.push_back(surfaceHigh);
 
