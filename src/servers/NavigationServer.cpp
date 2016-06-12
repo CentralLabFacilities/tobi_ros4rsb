@@ -417,9 +417,15 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
         unsigned int last = 0;
         //use big steps up until end fo path to minimize message size
         for (unsigned int i = 0; i < srv.response.plan.poses.size()-1; i += step) {
-            ROS_INFO_STREAM("loop " << i);
+            ROS_DEBUG_STREAM("1: loop " << i);
             geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
+            if(pose == NULL) {
+                ROS_WARN_STREAM("1: pose is null ");
+                break;
+            }
+            ROS_DEBUG_STREAM("1: a ");
             rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
+            ROS_DEBUG_STREAM("1: b ");
             waypoint->mutable_translation()->set_x(pose.position.x);
             waypoint->mutable_translation()->set_y(pose.position.y);
             waypoint->mutable_translation()->set_z(pose.position.z);
@@ -431,9 +437,15 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
         }
         // use small step till end to have ending correct
         for (unsigned int i = last; i < srv.response.plan.poses.size(); i += 1) {
-            ROS_INFO_STREAM("loop " << i);
+            ROS_DEBUG_STREAM("2: loop " << i);
             geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
+            if(pose == NULL) {
+                ROS_WARN_STREAM("2: pose is null ");
+                break;
+            }
+            ROS_DEBUG_STREAM("2: a ");
             rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
+            ROS_DEBUG_STREAM("2: b ");
             waypoint->mutable_translation()->set_x(pose.position.x);
             waypoint->mutable_translation()->set_y(pose.position.y);
             waypoint->mutable_translation()->set_z(pose.position.z);
