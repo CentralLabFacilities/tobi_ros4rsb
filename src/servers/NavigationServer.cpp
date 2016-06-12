@@ -419,10 +419,10 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
         for (unsigned int i = 0; i < srv.response.plan.poses.size()-1; i += step) {
             ROS_DEBUG_STREAM("1: loop " << i);
             geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
-            if(pose == NULL) {
-                ROS_WARN_STREAM("1: pose is null ");
-                break;
-            }
+//            if(pose == NULL) {
+//                ROS_WARN_STREAM("1: pose is null ");
+//                break;
+//            }
             ROS_DEBUG_STREAM("1: a ");
             rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
             ROS_DEBUG_STREAM("1: b ");
@@ -439,10 +439,10 @@ shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor,
         for (unsigned int i = last; i < srv.response.plan.poses.size(); i += 1) {
             ROS_DEBUG_STREAM("2: loop " << i);
             geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
-            if(pose == NULL) {
-                ROS_WARN_STREAM("2: pose is null ");
-                break;
-            }
+//            if(pose == NULL) {
+//                ROS_WARN_STREAM("2: pose is null ");
+//                break;
+//            }
             ROS_DEBUG_STREAM("2: a ");
             rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
             ROS_DEBUG_STREAM("2: b ");
