@@ -153,11 +153,12 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         
         
         //store highest plane
-        if(poseNew.pose.position.z > zMax){
+        if(zCoord > zMax){
+            cout << "found plane at z = " << zCoord << endl;
             surfaceHigh = surface;
             poseHigh = poseNew;
             primitiveHigh = primitive;
-            zMax = poseNew.pose.position.z;
+            zMax = zCoord;
         }
     }
 
@@ -206,7 +207,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     cout << "adding highest surface" << endl;
     //raise surface by 34cm
     moveit_msgs::CollisionObject surfaceUpper;
-    surfaceUpper.header.frame_id = poseBig.header.frame_id;
+    surfaceUpper.header.frame_id = poseHigh.header.frame_id;
     surfaceUpper.id = "surfaceHigh";
     surfaceUpper.operation = surfaceHigh.ADD;
     surfaceUpper.primitive_poses.push_back(poseHigh.pose);
