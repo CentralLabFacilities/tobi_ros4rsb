@@ -43,10 +43,11 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     vector<moveit_msgs::CollisionObject> surfaces;
 
     moveit_msgs::CollisionObject surfaceBig;
+    moveit_msgs::CollisionObject surfaceHigh;
     geometry_msgs::PoseStamped poseBig;
     shape_msgs::SolidPrimitive primitiveBig;
-    double yBig, xBig, zBig, yMaxB, yMinB;
-    yBig = xBig = zBig = yMaxB = yMinB = 0;
+    double yBig, xBig, zBig, yMaxB, yMinB, zMax;
+    yBig = xBig = zBig = yMaxB = yMinB = zMax= 0;
     int numPatches = input->patches_size();
     ROS_DEBUG_STREAM("CollisionSurfaceListener forwarding " << numPatches << " surfaces");
 
@@ -147,6 +148,12 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
           primitiveBig = primitive;
           poseBig = poseNew;
         }
+        
+        //store highest plane
+        if(surface.pose.position.z() > zMax){
+            surfaceHigh = surface;
+            zMax = surface.pose.position.z();
+        }
     }
 
     if(numPatches > 1){
@@ -186,6 +193,10 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     surfaceRight.primitive_poses[0].position.z = surfaceBig.primitive_poses[0].position.z / 2;
 
     surfaces.push_back(surfaceRight);
+    
+    //raise surface by 34cm
+    surfaceHigh.pose.position.z() += 0.34;
+    surfaces.push_back(surfaceHigh);
 
     sceneInterface.addCollisionObjects(surfaces);
 }
