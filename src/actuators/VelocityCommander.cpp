@@ -139,7 +139,7 @@ ExitStatus VelocityCommander::drive(std::vector<double> distance, std::vector<do
     }
     
     killRunningAndSet();
-    printf("drive %e with %e speed in direction (%e,%e)\n",angle, speed, direction[0], direction[1]);
+    printf("drive (%e,%e) with (%e,%e) speed in direction (%e,%e)\n",distance[0],distance[1], speed[0], speed[1], direction[0], direction[1]);
     if (distance[0] == 0 && distance[1] == 0) {
         running = false;
         return SUCCESS;
