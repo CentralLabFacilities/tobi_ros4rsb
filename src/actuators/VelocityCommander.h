@@ -19,6 +19,7 @@ public:
     virtual ~VelocityCommander();
     
     ExitStatus drive(double distance, double speed);
+    ExitStatus drive(std::vector<double> distance, std::vector<double> speed, std::vector<double> direction);
     ExitStatus turn(double angle, double speed);
     bool isRunning();
     void stop();
