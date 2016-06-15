@@ -7,6 +7,9 @@
 #include <unistd.h>
 #include "VelocityCommander.h"
 
+static const std::string FRAME_FROM = "odom"; 
+static const std::string FRAME_TO= "base_link"; 
+
 VelocityCommander::VelocityCommander(std::string name, ros::NodeHandle node) {
     this->name = name;
     this->node = node;
@@ -71,14 +74,14 @@ ExitStatus VelocityCommander::drive(double distance, double speed) {
     }
     
     //wait for the listener to get the first message
-    listener.waitForTransform("base_link", "odom", ros::Time::now(), ros::Duration(1.0));
+    listener.waitForTransform(FRAME_FROM, FRAME_TO, ros::Time::now(), ros::Duration(1.0));
     
     //we will record transforms here
     tf::StampedTransform start_transform;
     tf::StampedTransform current_transform;
 
     //record the starting transform from the odometry to the base frame
-    listener.lookupTransform("base_link", "odom", ros::Time(0), start_transform);
+    listener.lookupTransform(FRAME_FROM, FRAME_TO, ros::Time(0), start_transform);
     
     //we will be sending commands of type "twist"
     geometry_msgs::Twist base_cmd;
@@ -103,7 +106,7 @@ ExitStatus VelocityCommander::drive(double distance, double speed) {
       //get the current transform
       try
       {
-        listener.lookupTransform("base_link", "odom", ros::Time(0), current_transform);
+        listener.lookupTransform(FRAME_FROM, FRAME_TO, ros::Time(0), current_transform);
       }
       catch (tf::TransformException &ex)
       {
@@ -112,8 +115,8 @@ ExitStatus VelocityCommander::drive(double distance, double speed) {
         return TRANSFORM_ERROR;
       }
       //see how far we've traveled
-      tf::Transform relative_transform = start_transform.inverse() * current_transform;
-      double dist_moved = relative_transform.getOrigin().length();
+      tf::Transform relative_transform = start_transform.inverse() * current_transform; 
+     double dist_moved = relative_transform.getOrigin().length();
 
       if (dist_moved >= std::fabs(distance) || ros::Time::now() >= endTime) {
           std::cout << "dist_moved: " << dist_moved << "distance" << distance <<std::endl;
@@ -129,7 +132,86 @@ ExitStatus VelocityCommander::drive(double distance, double speed) {
     return result;
 }
 
-ExitStatus VelocityCommander::turn(double angle, double speed) {
+ExitStatus VelocityCommander::drive(std::vector<double> distance, std::vector<double> speed, std::vector<double> direction) {
+    if(direction.size() != 2 || speed.size() != 2 || distance.size() != 2) {
+        printf("invalid size of vectors for direction, size or speed!");
+        return CANCELLED;
+    }
+    
+    killRunningAndSet();
+    printf("drive %e with %e speed in direction (%e,%e)\n",angle, speed, direction[0], direction[1]);
+    if (distance[0] == 0 && distance[1] == 0) {
+        running = false;
+        return SUCCESS;
+    }
+    
+    //wait for the listener to get the first message
+    listener.waitForTransform(FRAME_FROM, FRAME_TO, ros::Time::now(), ros::Duration(1.0));
+    
+    //we will record transforms here
+    tf::StampedTransform start_transform;
+    tf::StampedTransform current_transform;
+
+    //record the starting transform from the odometry to the base frame
+    listener.lookupTransform(FRAME_FROM, FRAME_TO, ros::Time(0), start_transform);
+    
+    //we will be sending commands of type "twist"
+    geometry_msgs::Twist base_cmd;
+    //the command will be to go forward AND sideways
+    base_cmd.angular.z = 0;
+    
+    ros::Time endTime = ros::Time::now();
+    if (distance[0] > 0) {
+        base_cmd.linear.x = speed[0] * direction[0];
+        endTime = endTime + ros::Duration(fabs(distance[0]) /  fabs(base_cmd.linear.x) * 2.0 + 1.0);
+    } else {
+        base_cmd.linear.x = -speed[0] * direction[0];
+    }
+    if (distance[1] > 0) {
+        base_cmd.linear.y = speed[1] * direction[1];
+        endTime = endTime + ros::Duration(fabs(distance[1]) /  fabs(base_cmd.linear.y) * 2.0 + 1.0);
+    } else {
+        base_cmd.linear.y = -speed[1] * direction[1];
+    }
+        
+    ros::Rate rate(15.0);
+        
+    ExitStatus result = checkRunningAndExit();
+    while (result==STILL_RUNNING)
+    {
+      //send the drive command
+      publisher.publish(base_cmd);
+      rate.sleep();
+      //get the current transform
+      try
+      {
+        listener.lookupTransform(FRAME_FROM, FRAME_TO, ros::Time(0), current_transform);
+      }
+      catch (tf::TransformException &ex)
+      {
+        ROS_ERROR("%s",ex.what());
+        running = false;
+        return TRANSFORM_ERROR;
+      }
+      //see how far we've traveled
+      tf::Transform relative_transform = start_transform.inverse() * current_transform;
+      double dist_moved = relative_transform.getOrigin().length();
+
+      if (dist_moved >= std::fabs(distance[0]) || dist_moved >= std::fabs(distance[1]) || ros::Time::now() >= endTime) {
+          std::cout << "dist_moved: " << dist_moved << "distance given x,y" << distance[0] << "," << distance[1] << std::endl;
+          base_cmd.linear.x = 0;
+          publisher.publish(base_cmd);
+          running = false;
+          return SUCCESS;
+      }
+      result = checkRunningAndExit();
+    }
+    base_cmd.linear.x = 0; //Stop on error
+    publisher.publish(base_cmd);
+    return result;
+}
+
+ExitStatus VelocityCommander::turn(double angle, double speed) {  
     killRunningAndSet();
     printf("turn %e with %e speed\n",angle, speed);
     
@@ -149,7 +231,7 @@ ExitStatus VelocityCommander::turn(double angle, double speed) {
     uint skips = 0;
     
     //wait for the listener to get the first message
-    bool waitTransform = listener.waitForTransform("base_link", "odom", ros::Time::now(), ros::Duration(1.0));
+    bool waitTransform = listener.waitForTransform(FRAME_FROM, FRAME_TO, ros::Time::now(), ros::Duration(1.0));
     std::cout << "waitTransform was: " << waitTransform << std::endl;
         
     //we will record transforms here
@@ -176,7 +258,7 @@ ExitStatus VelocityCommander::turn(double angle, double speed) {
     std::cout << "got endtime" << std::endl;
 
     //record the starting transform from the odometry to the base frame    
-    listener.lookupTransform("base_link", "odom", ros::Time(0), start_transform);
+    listener.lookupTransform(FRAME_FROM, FRAME_TO, ros::Time(0), start_transform);
     last_transform = start_transform;    
     
     ExitStatus result = checkRunningAndExit();
@@ -195,7 +277,7 @@ ExitStatus VelocityCommander::turn(double angle, double speed) {
       //get the current transform
       try
       {
-        listener.lookupTransform("base_link", "odom", ros::Time(0), current_transform);
+        listener.lookupTransform(FRAME_FROM, FRAME_TO, ros::Time(0), current_transform);
         if (last_transform.stamp_!=current_transform.stamp_)  {
             double angle_turned_step = last_transform.getRotation().angleShortestPath(current_transform.getRotation());
             last_transform = current_transform;          

@@ -350,10 +350,30 @@ shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand>
     ROS_INFO("moveTo: before turn\n");
     ExitStatus status = this->velocityCommander->turn(yaw, v_theta);
     ROS_INFO("moveTo: after turn\n");
-	if (status == SUCCESS && coor->mutable_goal()->mutable_translation()->x() != 0) {
-		ROS_INFO("before drive\n");
-        status = this->velocityCommander->drive(coor->mutable_goal()->mutable_translation()->x(),
-                v_x);
+    if (status == SUCCESS && (coor->mutable_goal()->mutable_translation()->x() != 0 || coor->mutable_goal()->mutable_translation()->y() != 0)) {
+        ROS_INFO("before drive\n");
+        std::vector<double> direction;
+        std::vector<double> distance;
+        std::vector<double> speed;
+        if(coor->mutable_goal()->mutable_translation()->x() != 0) {
+            distance.push_back(coor->mutable_goal()->mutable_translation()->x());
+            direction.push_back(1);
+            speed.push_back(v_x);
+        } else {
+            distance.push_back(0);
+            direction.push_back(0);
+            speed.push_back(0);
+        }
+        if(coor->mutable_goal()->mutable_translation()->y() != 0) {
+            distance.push_back(coor->mutable_goal()->mutable_translation()->y());
+            direction.push_back(1);
+            speed.push_back(v_x);
+        } else {
+            distance.push_back(0);
+            direction.push_back(0);
+            speed.push_back(0);
+        }
+        status = this->velocityCommander->drive(distance, speed, direction);
     }
     ROS_INFO("moveTo: after drive\n");
     shared_ptr<CommandResult> result(new CommandResult());
