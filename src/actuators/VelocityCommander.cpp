@@ -197,8 +197,8 @@ ExitStatus VelocityCommander::drive(std::vector<double> distance, std::vector<do
       tf::Transform relative_transform = start_transform.inverse() * current_transform;
       double dist_moved = relative_transform.getOrigin().length();
 
-      if (dist_moved >= std::fabs(distance[0]) || dist_moved >= std::fabs(distance[1]) || ros::Time::now() >= endTime) {
-          std::cout << "dist_moved: " << dist_moved << "distance given x,y" << distance[0] << "," << distance[1] << std::endl;
+      if ((distance[0] != 0 && dist_moved >= std::fabs(distance[0])) || (distance[1] != 0 && dist_moved >= std::fabs(distance[1])) || ros::Time::now() >= endTime) {
+          std::cout << "dist_moved: " << dist_moved << "distance given (x,y): " << distance[0] << ", " << distance[1] << std::endl;
           base_cmd.linear.x = 0;
           publisher.publish(base_cmd);
           running = false;
