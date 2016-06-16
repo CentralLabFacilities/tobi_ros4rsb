@@ -216,7 +216,10 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     surfaceUpper.primitive_poses[0].position.y = surfaceHigh.primitive_poses[0].position.y;
     surfaceUpper.primitive_poses[0].position.z = surfaceHigh.primitive_poses[0].position.z + 0.34;
 
-    surfaces.push_back(surfaceUpper);
+    if(numPatches > 1){
+      surfaces.push_back(surfaceUpper);
+    }
+    
 
     sceneInterface.addCollisionObjects(surfaces);
 }
