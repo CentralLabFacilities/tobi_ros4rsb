@@ -161,13 +161,25 @@ ExitStatus VelocityCommander::drive(std::vector<double> distance, std::vector<do
     base_cmd.angular.z = 0;
     
     ros::Time endTime = ros::Time::now();
-    if (distance[0] != 0) {
-        base_cmd.linear.x = speed[0] * direction[0];
-        endTime = endTime + ros::Duration(fabs(distance[0]) /  fabs(base_cmd.linear.x) * 4.0 + 1.0);
+
+    if (distance[0] > 0) {
+        base_cmd.linear.x = speed[0];
+    } else {
+        base_cmd.linear.x = -speed[0];
     }
+
+    if (distance[0] != 0) {
+        endTime = endTime + ros::Duration(fabs(distance[0]) /  fabs(base_cmd.linear.x) * 4.0 + 5.0);
+    }
+
+    if (distance[1] > 0) {
+        base_cmd.linear.y = speed[1];
+    } else {
+        base_cmd.linear.y = -speed[1];
+    }
+
     if (distance[1] != 0) {
-        base_cmd.linear.y = speed[1] * direction[1];
-        endTime = endTime + ros::Duration(fabs(distance[1]) /  fabs(base_cmd.linear.y) * 4.0 + 1.0);
+        endTime = endTime + ros::Duration(fabs(distance[1]) /  fabs(base_cmd.linear.y) * 4.0 + 5.0);
     }
         
     ros::Rate rate(15.0);
@@ -192,6 +204,10 @@ ExitStatus VelocityCommander::drive(std::vector<double> distance, std::vector<do
       //see how far we've traveled
       tf::Transform relative_transform = start_transform.inverse() * current_transform;
       double dist_moved = relative_transform.getOrigin().length();
+
+      if (ros::Time::now() >= endTime) {
+          std::cout << "TIMEOUT" << std::endl;
+      }
 
       if ((distance[0] != 0 && dist_moved >= std::fabs(distance[0])) || (distance[1] != 0 && dist_moved >= std::fabs(distance[1])) || ros::Time::now() >= endTime) {
           std::cout << "dist_moved: " << dist_moved << "distance given (x,y): " << distance[0] << ", " << distance[1] << std::endl;
