@@ -161,17 +161,13 @@ ExitStatus VelocityCommander::drive(std::vector<double> distance, std::vector<do
     base_cmd.angular.z = 0;
     
     ros::Time endTime = ros::Time::now();
-    if (distance[0] > 0) {
+    if (distance[0] != 0) {
         base_cmd.linear.x = speed[0] * direction[0];
-        endTime = endTime + ros::Duration(fabs(distance[0]) /  fabs(base_cmd.linear.x) * 2.0 + 1.0);
-    } else {
-        base_cmd.linear.x = -speed[0] * direction[0];
+        endTime = endTime + ros::Duration(fabs(distance[0]) /  fabs(base_cmd.linear.x) * 4.0 + 1.0);
     }
-    if (distance[1] > 0) {
+    if (distance[1] != 0) {
         base_cmd.linear.y = speed[1] * direction[1];
-        endTime = endTime + ros::Duration(fabs(distance[1]) /  fabs(base_cmd.linear.y) * 2.0 + 1.0);
-    } else {
-        base_cmd.linear.y = -speed[1] * direction[1];
+        endTime = endTime + ros::Duration(fabs(distance[1]) /  fabs(base_cmd.linear.y) * 4.0 + 1.0);
     }
         
     ros::Rate rate(15.0);
