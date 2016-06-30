@@ -167,8 +167,8 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     }
 
     //primitive is reused and parameters for left plane are used
-    primitiveBig.dimensions[0] =  xBig; //length
-    primitiveBig.dimensions[1] =  0.01; //depth
+    primitiveBig.dimensions[0] =  surfaceHigh.primitives[0].dimensions[0];
+    primitiveBig.dimensions[1] =  0.01; //length
     primitiveBig.dimensions[2] =  zBig;//height
 
     moveit_msgs::CollisionObject surfaceLeft;
