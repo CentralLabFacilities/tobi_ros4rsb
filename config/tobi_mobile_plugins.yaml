@@ -26,6 +26,9 @@ publisher_list:
   - name: PersonDataPublisher
     scope: /hri/persons
     topic: /people_tracker/people
+  - name: SlamPosPublisher
+    scope: /ros4rsb/slampose/meka
+    topic: /map
 listener_list:
   - name: BoxListener
     scope: /boxes
