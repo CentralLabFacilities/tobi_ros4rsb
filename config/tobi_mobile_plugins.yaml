@@ -20,6 +20,9 @@ publisher_list:
   - name: SlamPosPublisher
     scope: /ros4rsb/slampose
     topic: /pose
+  - name: SlamPosPublisher
+    scope: /ros4rsb/slampose/tobi
+    topic: /pose
   - name: GlobalPlanPublisher
     scope: /ros4rsb/globalplan
     topic: /move_base/NavfnROS/plan
