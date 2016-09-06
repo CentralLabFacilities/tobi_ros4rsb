@@ -29,6 +29,5 @@ namespace ros4rsb {
         virtual ~OdometryDataPublisher();
         void callback(const nav_msgs::Odometry::ConstPtr &message);
 
-        CREATE_PUBLISHER_BUILDER_NESTED(OdometryDataPublisher)
     };
 }

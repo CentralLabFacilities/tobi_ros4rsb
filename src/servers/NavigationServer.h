@@ -76,8 +76,6 @@ public:
 
     void poseCallback(const nav_msgs::Odometry::ConstPtr &message);
 
-    CREATE_SERVER_BUILDER_NESTED(NavigationServer)
-
 private:
     bool stopping;
     std::string name;

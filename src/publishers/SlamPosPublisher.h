@@ -34,8 +34,6 @@ public:
 	void publishThread();
         geometry_msgs::Pose getPose();
 
-    CREATE_PUBLISHER_BUILDER_NESTED(SlamPosPublisher)
-
 private:
     void convertPoseToPositionData(const geometry_msgs::Pose &pose,
             boost::shared_ptr<rst::geometry::Pose> positionData);

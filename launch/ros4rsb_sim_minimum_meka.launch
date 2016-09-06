@@ -1,0 +1,6 @@
+<launch>
+    <node name="ros4rsb" pkg="ros4rsb" type="ros4rsb" output="screen"  respawn="true" respawn_delay="5">		
+		<rosparam file="$(find ros4rsb)/config/meka_minimum_plugins.yaml" />
+		<param name="isInterleavedLaserData" value="false" type="bool" /> 
+	</node>
+</launch>

@@ -30,6 +30,5 @@ public:
 	virtual ~BoxListener();
 	void callback(BoxPtr data);
 
-	CREATE_LISTENER_BUILDER_NESTED(BoxListener)
 };
 }

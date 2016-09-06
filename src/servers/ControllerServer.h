@@ -12,8 +12,6 @@
 #include <trajectory_msgs/JointTrajectory.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 
-
-
 // Local
 #include "Server.h"
 #include "ServerException.h"
@@ -28,8 +26,6 @@ namespace ros4rsb {
 
         bool zliftGoto(float in);
         bool headGoto(float j0, float j1);
-
-        CREATE_SERVER_BUILDER_NESTED(ControllerServer)
 
     private:
         std::string name;

@@ -68,30 +68,4 @@ protected:
 	typename rsb::Informer<T>::Ptr rsbInformer;
 };
 
-class PublisherBuilder {
-public:
-    typedef boost::shared_ptr<PublisherBuilder> Ptr;
-    PublisherBuilder(const std::string &publisherName): publisherName(publisherName) {
-    }
-    virtual std::string getPublisherName() const {
-        return publisherName;
-    }
-    virtual Publisher::Ptr build(const std::string &topicIn, const std::string &scopeOut, ros::NodeHandle &node) const = 0;
-    virtual ~PublisherBuilder() {
-    }
-protected:
-    std::string publisherName;
-};
-
-#define CREATE_PUBLISHER_BUILDER_NESTED(PUBLISHER_NAME) class Builder: public PublisherBuilder {\
-public:\
-    Builder(const std::string &publisherName) :\
-            PublisherBuilder(publisherName) {\
-    }\
-    virtual Publisher::Ptr build(const std::string &topicIn, const std::string &scopeOut, ros::NodeHandle &node) const {\
-        ROS_INFO_STREAM("Building publisher " << publisherName << ", topic: " << topicIn << ", scope: " << scopeOut);\
-        return Publisher::Ptr(new PUBLISHER_NAME(topicIn, scopeOut, node));\
-    }\
-};
-
 }

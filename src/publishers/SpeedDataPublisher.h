@@ -25,8 +25,6 @@ namespace ros4rsb {
         SpeedDataPublisher(const std::string &topicIn,std::string name, ros::NodeHandle node);
         virtual ~SpeedDataPublisher();
         void callback(const nav_msgs::Odometry::ConstPtr &message);
-
-        CREATE_PUBLISHER_BUILDER_NESTED(SpeedDataPublisher)
     };
 
 }

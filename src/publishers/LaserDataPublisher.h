@@ -49,8 +49,6 @@ namespace ros4rsb {
          */
         void callback(const sensor_msgs::LaserScan::ConstPtr &message);
 
-        CREATE_PUBLISHER_BUILDER_NESTED(LaserDataPublisher)
-
     private:
 
         /**

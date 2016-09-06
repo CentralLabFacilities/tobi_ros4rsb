@@ -30,8 +30,6 @@ class WaveDetectionPublisher : public PublisherImpl<rst::geometry::Pose>{
     
     void handDestroyCallback(const waving_detection::HandDestroyConstPtr& msg);
     
-    CREATE_PUBLISHER_BUILDER_NESTED(WaveDetectionPublisher)
-
 private:
     ros::Subscriber handCreateSub;
     ros::Subscriber handDestroySub;

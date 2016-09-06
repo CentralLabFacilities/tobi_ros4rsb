@@ -61,30 +61,4 @@ protected:
 	typename rsb::ListenerPtr rsbListener;
 };
 
-class ListenerBuilder {
-public:
-    typedef boost::shared_ptr<ListenerBuilder> Ptr;
-    ListenerBuilder(const std::string &listenerName): listenerName(listenerName) {
-    }
-    virtual std::string getListenerName() const {
-        return listenerName;
-    }
-    virtual Listener::Ptr build(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle &node) const = 0;
-    virtual ~ListenerBuilder() {
-    }
-protected:
-    std::string listenerName;
-};
-
-#define CREATE_LISTENER_BUILDER_NESTED(LISTENER_NAME) class Builder: public ListenerBuilder {\
-public:\
-    Builder(const std::string &listenerName) :\
-            ListenerBuilder(listenerName) {\
-    }\
-    virtual Listener::Ptr build(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle &node) const {\
-        ROS_INFO_STREAM("Building listener " << listenerName << ", topic: " << topicOut << ", scope: " << scopeIn);\
-        return Listener::Ptr(new LISTENER_NAME(scopeIn, topicOut, node));\
-    }\
-};
-
 }

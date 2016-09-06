@@ -32,7 +32,6 @@ namespace ros4rsb {
         void setActiveGoal(actionlib_msgs::GoalID goalID);
         void publishPlannerState();
 
-        CREATE_PUBLISHER_BUILDER_NESTED(GlobalPlannerStatePublisher)
 
     private:
         void callback(const actionlib_msgs::GoalStatusArrayConstPtr &message);

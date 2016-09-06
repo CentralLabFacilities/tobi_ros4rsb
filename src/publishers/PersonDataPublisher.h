@@ -46,7 +46,6 @@ public:
 	 */
 	void callback(const people_msgs::People::ConstPtr &message);
 
-	CREATE_PUBLISHER_BUILDER_NESTED(PersonDataPublisher)
 private:
 
 	bool dataAvailable;

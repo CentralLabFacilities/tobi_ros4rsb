@@ -32,8 +32,6 @@ public:
 	virtual ~CollisionBoxListener();
 	void callback(BoxesPtr data);
 
-	CREATE_LISTENER_BUILDER_NESTED(CollisionBoxListener)
-
 private:
 	std::vector<std::string> lastObjects;
 	TransformerTF transformer;

@@ -33,8 +33,6 @@ namespace ros4rsb {
 
         void publishThread();
 
-        CREATE_PUBLISHER_BUILDER_NESTED(SlamMapPublisher)
-
     private:
         boost::mutex mutex;
         boost::thread runner;

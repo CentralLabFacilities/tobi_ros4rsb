@@ -34,8 +34,6 @@ public:
 	virtual ~CollisionSurfaceListener();
 	void callback(PatchesPtr data);
 
-	CREATE_LISTENER_BUILDER_NESTED(CollisionSurfaceListener)
-
 private:
 	static const std::string DEFAULT_FRAME_ORIGIN_ARM;
 

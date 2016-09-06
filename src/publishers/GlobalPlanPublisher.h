@@ -48,7 +48,6 @@ public:
 	 */
 	void callback(const nav_msgs::PathConstPtr &message);
         
-	CREATE_PUBLISHER_BUILDER_NESTED(GlobalPlanPublisher)
 private:
     tf::TransformListener *tfListener;
 	uint64_t timestamp;

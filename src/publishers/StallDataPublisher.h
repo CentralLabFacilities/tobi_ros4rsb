@@ -26,6 +26,5 @@ namespace ros4rsb {
         virtual ~StallDataPublisher();
         void callback(const diagnostic_msgs::DiagnosticArray::ConstPtr &message);
 
-        CREATE_PUBLISHER_BUILDER_NESTED(StallDataPublisher)
     };
 }
