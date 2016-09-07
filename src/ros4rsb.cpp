@@ -53,34 +53,38 @@ int main(int argc, char **argv) {
 
         /* actually create each publisher */
         vector<ros4rsb::Publisher::Ptr> publishers;
-        for (int i = 0; i < pub_list.size(); ++i) {
-            if (!pub_list[i].hasMember("name") || !pub_list[i].hasMember("topic") || !pub_list[i].hasMember("scope")) {
-                ROS_ERROR("Name, topic and scope must be specified for each publisher");
-                continue;
-            }
-            string name = string(pub_list[i]["name"]);
-            string topic = string(pub_list[i]["topic"]);
-            string scope = string(pub_list[i]["scope"]);
+        if(pub_list.getType() != XmlRpc::XmlRpcValue::TypeInvalid) {
+            for (int i = 0; i < pub_list.size(); ++i) {
+                if (!pub_list[i].hasMember("name") || !pub_list[i].hasMember("topic") || !pub_list[i].hasMember("scope")) {
+                    ROS_ERROR("Name, topic and scope must be specified for each publisher");
+                    continue;
+                }
+                string name = string(pub_list[i]["name"]);
+                string topic = string(pub_list[i]["topic"]);
+                string scope = string(pub_list[i]["scope"]);
 
-            ros4rsb::Publisher::Ptr pub = PublisherFactory::build(name, topic, scope, n);
-            publishers.push_back(pub);
+                ros4rsb::Publisher::Ptr pub = PublisherFactory::build(name, topic, scope, n);
+                publishers.push_back(pub);
+            }
         }
 
         ROS_INFO_STREAM(publishers.size() << " publishers created");
 
         /* actually create each listener */
         vector<ros4rsb::Listener::Ptr> listeners;
-        for (int i = 0; i < lis_list.size(); ++i) {
-            if (!lis_list[i].hasMember("name") || !lis_list[i].hasMember("topic") || !lis_list[i].hasMember("scope")) {
-                ROS_ERROR("Name, topic and scope must be specified for each listener");
-                continue;
-            }
-            string name = string(lis_list[i]["name"]);
-            string topic = string(lis_list[i]["topic"]);
-            string scope = string(lis_list[i]["scope"]);
+        if(lis_list.getType() != XmlRpc::XmlRpcValue::TypeInvalid) {
+            for (int i = 0; i < lis_list.size(); ++i) {
+                if (!lis_list[i].hasMember("name") || !lis_list[i].hasMember("topic") || !lis_list[i].hasMember("scope")) {
+                    ROS_ERROR("Name, topic and scope must be specified for each listener");
+                    continue;
+                }
+                string name = string(lis_list[i]["name"]);
+                string topic = string(lis_list[i]["topic"]);
+                string scope = string(lis_list[i]["scope"]);
 
-            ros4rsb::Listener::Ptr listener = ListenerFactory::build(name, scope, topic, n);
-            listeners.push_back(listener);
+                ros4rsb::Listener::Ptr listener = ListenerFactory::build(name, scope, topic, n);
+                listeners.push_back(listener);
+            }
         }
 
         ROS_INFO_STREAM(listeners.size() << " listener created");
