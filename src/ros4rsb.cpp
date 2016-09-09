@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
                 string topic = string(serv_list[i]["topic"]);
                 string scope = string(serv_list[i]["scope"]);
 
-                ros4rsb::Server::Ptr server = ServerFactory::build(name, topic, scope, n);
+                ros4rsb::Server::Ptr server = ServerFactory::build(name, scope, n);
                 servers.push_back(server);
             }
         }

@@ -13,14 +13,14 @@ namespace ros4rsb {
 
 class ServerFactory {
 public:
-   static Server::Ptr build(const std::string name, const std::string &topicIn, const std::string &scopeOut, ros::NodeHandle &node) {
+   static Server::Ptr build(const std::string name, const std::string &scope, ros::NodeHandle &node) {
 
-       ROS_INFO_STREAM("Building server " << name << ", topic: " << topicIn << ", scope: " << scopeOut);
+       ROS_INFO_STREAM("Building server " << name << ", scope: " << scope);
 
        if(name == "NavigationServer")
-           return NavigationServer::Ptr(new NavigationServer(topicIn, node));
+           return NavigationServer::Ptr(new NavigationServer(scope, node));
        if(name == "ControllerServer")
-           return ControllerServer::Ptr(new ControllerServer(topicIn, node));
+           return ControllerServer::Ptr(new ControllerServer(scope, node));
 
        ROS_ERROR_STREAM("No server found.");
 
