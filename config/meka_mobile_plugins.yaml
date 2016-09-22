@@ -21,7 +21,7 @@ publisher_list:
     scope: /ros4rsb/slampose
     topic: /meka_roscontrol_base_controller/odom
   - name: SlamPosPublisher
-    scope: /ros4rsb/slampose/meka
+    scope: /pose/ros4rsb/slampose/meka
     topic: /meka_roscontrol_base_controller/odom
   - name: GlobalPlanPublisher
     scope: /ros4rsb/globalplan
