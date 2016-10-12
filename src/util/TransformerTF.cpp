@@ -8,6 +8,7 @@
 #include "TransformerTF.h"
 
 #include <kdl/frames.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
