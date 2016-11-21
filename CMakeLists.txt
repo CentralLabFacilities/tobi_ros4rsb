@@ -19,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS message_generation
                                         diagnostic_msgs
                                         actionlib_msgs
                                         moveit_ros_planning_interface
+					move_base_msgs
+					move_base
                                         roscpp 
                                         roslib)
 
