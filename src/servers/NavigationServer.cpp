@@ -248,10 +248,11 @@ void NavigationServer::stop() {
     if (this->moveBaseClient->getState() == SimpleClientGoalState::ACTIVE) {
         stopping = true;
         moveBaseClient->cancelAllGoals();
-        while (moveBaseClient->getState() == SimpleClientGoalState::ACTIVE) {
-            ROS_INFO("Wait for stop!!!");
-            usleep(2500);
-        }
+        //asking for getState() while canceling goals possibly gives runtime exception. is this check even necessary?
+//        while (moveBaseClient->getState() == SimpleClientGoalState::ACTIVE) {
+//            ROS_INFO("Wait for stop!!!");
+//            usleep(2500);
+//        }
 
     } else {
         ROS_WARN("called stop but there is no goal running? stopping velocity commander");

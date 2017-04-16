@@ -40,7 +40,7 @@ void PersonDataPublisher::callback(
   
 	ROS_DEBUG_STREAM("PersonDataPublisher message callback");
 	
-	boost::mutex::scoped_lock lock(myMutex/*, boost::try_to_lock*/);
+	boost::mutex::scoped_try_lock lock(myMutex/*, boost::try_to_lock*/);
 	if (!lock.owns_lock()) {
 		return;
 	}
