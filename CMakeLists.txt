@@ -41,9 +41,7 @@ catkin_package(CATKIN_DEPENDS message_runtime
                               moveit_ros_planning_interface
                               roscpp
                               roslib
-                              std_srvs
-                              )
-
+                              std_srvs)
 ## Include catkin deps
 include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})

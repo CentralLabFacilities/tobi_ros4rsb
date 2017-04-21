@@ -26,7 +26,7 @@ using namespace rst::scene;
 using namespace rst::generic;
 using namespace actionlib;
 using namespace move_base_msgs;
-
+        
 namespace ros4rsb {
 
     class StopCb : public LocalServer::Callback<void, void> {
@@ -98,6 +98,8 @@ namespace ros4rsb {
         }
     };
 
+
+
     class MoveToCoordinateCb : public LocalServer::Callback<CoordinateCommand, CommandResult> {
         NavigationServer *server;
     public:
@@ -163,16 +165,17 @@ namespace ros4rsb {
         }
     };
 
-    class ClearCostmap : public LocalServer::Callback<void, void> {
+
+    class ClearCostmapCb : public LocalServer::Callback<std_srvs::Empty,std_srvs::Empty> {
         NavigationServer *server;
     public:
 
-        ClearCostmap(NavigationServer *server) {
+        ClearCostmapCb(NavigationServer *server) {
             this->server = server;
         }
 
-        bool call(const std::string&, shared_ptr<CoordinateCommand> input) {
-            return server->clearCostmap();
+        shared_ptr<std_srvs::Empty> call(const std::string&, shared_ptr<std_srvs::Empty> input) {
+            return server->clearCostmap(input);
         }
     };
 
@@ -351,6 +354,7 @@ namespace ros4rsb {
         ROS_INFO("called navigate\n");
         return result;
     }
+<<<<<<< c9d35f9eafa05e0bf09240c7673df74cac4a9b83
 
     shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand> coor,
             bool relative) {
@@ -507,6 +511,165 @@ namespace ros4rsb {
         clientClearCostmap.call(srv);
     }
 
+=======
+
+    shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand> coor,
+            bool relative) {
+        ROS_INFO_STREAM("called moveTo, relative:" << relative);
+        ROS_INFO_STREAM("coor:" << coor);
+        stop();
+        if (!relative) {
+            ROS_INFO("fail not impl");
+            shared_ptr<CommandResult> result(new CommandResult());
+            result->set_type(CommandResult_Result_CUSTOM_ERROR);
+            result->set_description("not impl");
+            return result;
+        }
+        move_base::MoveBaseConfig move_base_config;
+        double v_theta;
+        if (coor->has_motion_parameters() && coor->motion_parameters().has_max_acceleration()) {
+            v_theta = coor->motion_parameters().max_acceleration();
+        } else {
+            v_theta = this->defaultTurnSpeed;
+        }
+        double v_x;
+        if (coor->has_motion_parameters() && coor->motion_parameters().has_max_velocity()) {
+            v_x = coor->motion_parameters().max_velocity();
+        } else {
+            v_x = this->defaultMoveSpeed;
+        }
+        const rst::geometry::Rotation r = coor->mutable_goal()->rotation();
+        tfScalar roll, pitch, yaw;
+        tf::Quaternion q = tf::Quaternion(r.qx(), r.qy(), r.qz(), r.qw());
+        tf::Matrix3x3(q).getEulerYPR(yaw, pitch, roll);
+        ROS_INFO_STREAM("yaw: " << yaw << ",pitch: " << pitch << ",roll: " << roll);
+        //our angle is pitch its around y axis
+        ROS_INFO("moveTo: before turn\n");
+        ExitStatus status = this->velocityCommander->turn(yaw, v_theta);
+        ROS_INFO("moveTo: after turn\n");
+        if (status == SUCCESS && coor->mutable_goal()->mutable_translation()->x() != 0) {
+            ROS_INFO("before drive\n");
+            status = this->velocityCommander->drive(coor->mutable_goal()->mutable_translation()->x(),
+                    v_x);
+        }
+        ROS_INFO("moveTo: after drive\n");
+        shared_ptr<CommandResult> result(new CommandResult());
+        switch (status) {
+            case CANCELLED:
+                result->set_type(CommandResult_Result_CANCELLED);
+                break;
+            case NODE_BROKEN:
+                result->set_type(CommandResult_Result_CUSTOM_ERROR);
+                result->set_description("Node is broken");
+                break;
+            case SUCCESS:
+                result->set_type(CommandResult_Result_SUCCESS);
+                break;
+            case SUPERSEDED:
+                result->set_type(CommandResult_Result_SUPERSEDED);
+                break;
+            case TRANSFORM_ERROR:
+                result->set_type(CommandResult_Result_CUSTOM_ERROR);
+                result->set_description("Transformation exception see ROS_ERROR log");
+                break;
+            default:
+                result->set_type(CommandResult_Result_UNKNOWN_ERROR);
+                result->set_code(status);
+                result->set_description("see error code");
+        }
+        ROS_INFO("moveTo:  finished\n");
+        return result;
+    }
+
+    shared_ptr<Path> NavigationServer::getPathTo(shared_ptr<CoordinateCommand> coor, bool relative) {
+        ROS_INFO("call getPathTo\n");
+        nav_msgs::GetPlan srv;
+        {
+            boost::mutex::scoped_lock lock(poseMutex);
+            srv.request.start.pose = currentPose;
+        }
+        ROS_INFO_STREAM("start pose: " << srv.request.start.pose);
+        if (relative)
+            srv.request.goal.header.frame_id = "base_link";
+        else
+            srv.request.goal.header.frame_id = "map";
+        srv.request.goal.pose.position.x = coor->mutable_goal()->mutable_translation()->x();
+        srv.request.goal.pose.position.y = coor->mutable_goal()->mutable_translation()->y();
+        srv.request.goal.pose.position.z = srv.request.start.pose.position.z;
+        srv.request.goal.pose.orientation.x = coor->mutable_goal()->mutable_rotation()->qx();
+        srv.request.goal.pose.orientation.y = coor->mutable_goal()->mutable_rotation()->qy();
+        srv.request.goal.pose.orientation.z = coor->mutable_goal()->mutable_rotation()->qz();
+        srv.request.goal.pose.orientation.w = coor->mutable_goal()->mutable_rotation()->qw();
+        srv.request.tolerance = coor->mutable_motion_parameters()->translation_accuracy();
+        ROS_INFO_STREAM("search for plan with tol: " << srv.request.tolerance << ", x:"
+                << srv.request.goal.pose.position.x << ",y=" << srv.request.goal.pose.position.y);
+        shared_ptr<Path> path(new Path());
+        ROS_INFO("calling getPlan...");
+        if (clientGetPlan.call(srv) && (srv.response.plan.poses.size() != 0)) {
+            ROS_DEBUG_STREAM("a");
+            // skip some points for efficiency
+            unsigned int step = ceil(srv.response.plan.poses.size() / WAYPOINTS_PER_MESSAGE);
+            ROS_DEBUG_STREAM("b");
+            if (step == 0)
+                ++step;
+            ROS_DEBUG_STREAM("c");
+            unsigned int last = 0;
+            ROS_DEBUG_STREAM("d");
+            //use big steps up until end fo path to minimize message size
+            for (unsigned int i = 0; i < srv.response.plan.poses.size() - 1; i += step) {
+                ROS_DEBUG_STREAM("1: loop " << i);
+                geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
+                //            if(pose == NULL) {
+                //                ROS_WARN_STREAM("1: pose is null ");
+                //                break;
+                //            }
+                ROS_DEBUG_STREAM("1: a ");
+                rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
+                ROS_DEBUG_STREAM("1: b ");
+                waypoint->mutable_translation()->set_x(pose.position.x);
+                waypoint->mutable_translation()->set_y(pose.position.y);
+                waypoint->mutable_translation()->set_z(pose.position.z);
+                waypoint->mutable_rotation()->set_qw(pose.orientation.w);
+                waypoint->mutable_rotation()->set_qx(pose.orientation.x);
+                waypoint->mutable_rotation()->set_qy(pose.orientation.y);
+                waypoint->mutable_rotation()->set_qz(pose.orientation.z);
+                last = i;
+            }
+            // use small step till end to have ending correct
+            for (unsigned int i = last; i < srv.response.plan.poses.size(); i += 1) {
+                ROS_DEBUG_STREAM("2: loop " << i);
+                geometry_msgs::Pose pose = srv.response.plan.poses[i].pose;
+                //            if(pose == NULL) {
+                //                ROS_WARN_STREAM("2: pose is null ");
+                //                break;
+                //            }
+                ROS_DEBUG_STREAM("2: a ");
+                rst::geometry::Pose *waypoint = path->mutable_poses()->Add();
+                ROS_DEBUG_STREAM("2: b ");
+                waypoint->mutable_translation()->set_x(pose.position.x);
+                waypoint->mutable_translation()->set_y(pose.position.y);
+                waypoint->mutable_translation()->set_z(pose.position.z);
+                waypoint->mutable_rotation()->set_qw(pose.orientation.w);
+                waypoint->mutable_rotation()->set_qx(pose.orientation.x);
+                waypoint->mutable_rotation()->set_qy(pose.orientation.y);
+                waypoint->mutable_rotation()->set_qz(pose.orientation.z);
+            }
+
+            ROS_INFO_STREAM("got plan...");
+        } else {
+            ROS_INFO_STREAM("no plan...");
+        }
+        return path;
+        ROS_INFO("called getPathTo\n");
+    }
+
+    shared_ptr<std_srvs::Empty> NavigationServer::clearCostmap(shared_ptr<std_srvs::Empty> in) {
+        clientClearCostmap.call(*in);
+        shared_ptr<std_srvs::Empty> srv;
+        return srv;
+    }
+
+>>>>>>> clear costmap
     shared_ptr<int64_t> NavigationServer::getCostGlobal(shared_ptr<CoordinateCommand> coor) {
         ROS_INFO("call getCostGlobal\n");
         unsigned int mapX;

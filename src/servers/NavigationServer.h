@@ -29,6 +29,7 @@
 #include <ros/ros.h>
 #include <nav_msgs/GetPlan.h>
 #include <nav_msgs/Odometry.h>
+#include <std_srvs/Empty.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <geometry_msgs/Pose.h>
 #include <actionlib/client/simple_action_client.h>
@@ -71,6 +72,8 @@ public:
             boost::shared_ptr<std::string> node, boost::shared_ptr<rst::generic::KeyValuePair> key);
     boost::shared_ptr<int64_t> getCostGlobal(
             boost::shared_ptr<rst::navigation::CoordinateCommand> corr);
+    boost::shared_ptr<std_srvs::Empty> clearCostmap(
+            boost::shared_ptr<std_srvs::Empty> in);
     bool isLocalized();
     boost::shared_ptr<rst::navigation::PlatformCapabilities> getCapabilities();
 
