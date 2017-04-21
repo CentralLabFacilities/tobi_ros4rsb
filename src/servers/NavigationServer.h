@@ -90,6 +90,7 @@ private:
     rsb::patterns::LocalServerPtr server;
     ros::Subscriber rosSubscriber;
     ros::ServiceClient clientGetPlan;
+    ros::ServiceClient clientClearCostmap;
     ros::ServiceClient drcclient_local_costmap;
     ros::ServiceClient drcclient_global_costmap;
     ros::ServiceClient drcclient_move_base;

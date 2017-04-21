@@ -22,7 +22,8 @@ find_package(catkin REQUIRED COMPONENTS message_generation
 					move_base_msgs
 					move_base
                                         roscpp 
-                                        roslib)
+                                        roslib
+                                        std_srvs)
 
 catkin_package(CATKIN_DEPENDS message_runtime
                               tf
@@ -40,6 +41,7 @@ catkin_package(CATKIN_DEPENDS message_runtime
                               moveit_ros_planning_interface
                               roscpp
                               roslib
+                              std_srvs
                               )
 
 ## Include catkin deps
