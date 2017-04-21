@@ -1,0 +1,42 @@
+publisher_list:
+  - name: WaveDetectionPublisher
+    scope: /ros4rsb/handPos
+    topic: $$$ignored$$$
+  - name: LaserDataPublisher
+    scope: /ros4rsb/laserscan
+    topic: /depth_to_laser/scan
+  - name: OdometryDataPublisher
+    scope: /ros4rsb/odometryData
+    topic: /odom
+  - name: SpeedDataPublisher
+    scope: /ros4rsb/speedData
+    topic: /odom
+  - name: SlamMapPublisher
+    scope: /ros4rsb/slamMap
+    topic: /map
+  - name: SlamPosPublisher
+    scope: /ros4rsb/slampose
+    topic: /amcl_pose 
+  - name: SlamPosPublisher
+    scope: /pose/ros4rsb/slampose/tobi
+    topic: /amcl_pose
+  - name: GlobalPlanPublisher
+    scope: /ros4rsb/globalplan
+    topic: /move_base/NavfnROS/plan
+  - name: PersonDataPublisher
+    scope: /hri/persons
+    topic: /people_tracker/people
+listener_list:
+  - name: BoxListener
+    scope: /boxes
+    topic: box_marker
+#  - name: CollisionBoxListener
+#    scope: /clafu/results/region3d
+#    topic: $$$ignored$$$
+  - name: CollisionSurfaceListener
+    scope: /clafu/table
+    topic: $$$ignored$$$
+server_list:
+  - name: NavigationServer
+    scope: /nav_server
+    topic: $$$ignored$$$
