@@ -166,7 +166,7 @@ namespace ros4rsb {
     };
 
 
-    class ClearCostmapCb : public LocalServer::Callback<std_srvs::Empty,std_srvs::Empty> {
+    class ClearCostmapCb : public LocalServer::Callback<void,void> {
         NavigationServer *server;
     public:
 
@@ -174,8 +174,8 @@ namespace ros4rsb {
             this->server = server;
         }
 
-        shared_ptr<std_srvs::Empty> call(const std::string&, shared_ptr<std_srvs::Empty> input) {
-            return server->clearCostmap(input);
+        void call(const std::string&) {
+            return server->clearCostmap();
         }
     };
 
@@ -505,10 +505,12 @@ namespace ros4rsb {
         ROS_INFO("called getPathTo\n");
     }
 
-    shared_ptr<std_srvs::Empty> NavigationServer::clearCostmap(shared_ptr<std_srvs::Empty> in) {
-        clientClearCostmap.call(*in);
+    void NavigationServer::clearCostmap() {
+        ROS_INFO("call clear costmap\n");
         shared_ptr<std_srvs::Empty> srv;
-        return srv;
+        clientClearCostmap.call(*srv);
+        ROS_INFO("called clear costmap\n");
+        return;
     }
 
     shared_ptr<int64_t> NavigationServer::getCostGlobal(shared_ptr<CoordinateCommand> coor) {

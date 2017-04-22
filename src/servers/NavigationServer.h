@@ -72,8 +72,7 @@ public:
             boost::shared_ptr<std::string> node, boost::shared_ptr<rst::generic::KeyValuePair> key);
     boost::shared_ptr<int64_t> getCostGlobal(
             boost::shared_ptr<rst::navigation::CoordinateCommand> corr);
-    boost::shared_ptr<std_srvs::Empty> clearCostmap(
-            boost::shared_ptr<std_srvs::Empty> in);
+    void clearCostmap();
     bool isLocalized();
     boost::shared_ptr<rst::navigation::PlatformCapabilities> getCapabilities();
 
