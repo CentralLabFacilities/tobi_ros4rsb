@@ -80,7 +80,8 @@ void PersonDataPublisher::callback(
           //take characters 0 to 8 from the uuid, parse as hex(base 16) and assign to unsigned int.
           //123e4567-e89b-12d3-a456-426655440000 -> 123e4567 -> 306070887
           unsigned int x = strtoul(pTmp.name.substr(0, 8).c_str(), NULL, 16);
-          
+
+
 	  p->mutable_tracking_info()->set_id(x);
 	  //boost::uuids::uuid uuid = gen(pTmp.name);
 	  //int* id;
@@ -123,6 +124,8 @@ void PersonDataPublisher::callback(
 	rsb::EventPtr event = rsbInformer->createEvent();
 	event->setData(list);
 	event->mutableMetaData().setCreateTime(timestamp);
+    cout << "Starting to publish people" << endl;
 	this->publish(event);
+    cout << "People published" << endl << endl ;
 }
 }
