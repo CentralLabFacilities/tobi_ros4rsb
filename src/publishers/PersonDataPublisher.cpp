@@ -124,8 +124,8 @@ void PersonDataPublisher::callback(
 	rsb::EventPtr event = rsbInformer->createEvent();
 	event->setData(list);
 	event->mutableMetaData().setCreateTime(timestamp);
-    cout << "Starting to publish people" << endl;
+    std::cout << "Starting to publish people" << std::endl;
 	this->publish(event);
-    cout << "People published" << endl << endl ;
+    std::cout << "People published" << std::endl << std::endl ;
 }
 }
