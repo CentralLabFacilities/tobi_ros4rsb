@@ -100,7 +100,9 @@ void PersonDataPublisher::callback(
 	  p->mutable_body()->mutable_location()->set_y(pTmp.position.y);
 	  p->mutable_body()->mutable_location()->set_z(0);
 	  p->mutable_body()->mutable_location()->set_frame_id("/map");
-	  
+
+      std::cout << pTmp.position.x << std::endl;
+
 	  //ProbPos oPos;
 	  //pTmp->getPersGlobalOrientation(oPos);
 	  //Eigen::Quaternionf quat(Eigen::AngleAxisf(oPos.fPos, Eigen::Vector3f::UnitZ()));
