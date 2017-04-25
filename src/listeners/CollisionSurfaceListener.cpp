@@ -17,7 +17,7 @@ using namespace rst;
 
 namespace ros4rsb {
 
-const std::string CollisionSurfaceListener::DEFAULT_FRAME_ORIGIN_ARM = "base_link";
+const std::string CollisionSurfaceListener::DEFAULT_FRAME_ORIGIN_ARM = "base_footprint";
 
 CollisionSurfaceListener::CollisionSurfaceListener(const std::string &scopeIn, const std::string &topicOut, ros::NodeHandle &node) :
         ListenerScene(scopeIn),
@@ -115,18 +115,18 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         poseOld.pose.orientation.x = patch.base().rotation().qx();
         poseOld.pose.orientation.y = patch.base().rotation().qy();
         poseOld.pose.orientation.z = patch.base().rotation().qz();
-        poseOld.header.frame_id = patch.base().translation().frame_id();
+        poseOld.header.frame_id = DEFAULT_FRAME_ORIGIN_ARM;
 
         // Attention: Ros assumes the applied pose to be the center of the
         // object. The RST type does not require the pose to be the center. Therefore we shift
         // shift in the x-y plane.
         geometry_msgs::PoseStamped poseNew;
-        transformer.transform(poseOld, poseNew, "base_link");
+        transformer.transform(poseOld, poseNew, "base_footprint");
 //        poseNew.pose.position.x -= xCenter;
 //        poseNew.pose.position.y -= yCenter;
 
         moveit_msgs::CollisionObject surface;
-        surface.header.frame_id = poseNew.header.frame_id;
+        surface.header.frame_id = DEFAULT_FRAME_ORIGIN_ARM;
         surface.id = ss.str();
         surface.operation = surface.ADD;
         surface.primitive_poses.push_back(poseNew.pose);
@@ -159,7 +159,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     primitiveBig.dimensions[2] =  zBig;//height
 
     moveit_msgs::CollisionObject surfaceLeft;
-    surfaceLeft.header.frame_id = poseBig.header.frame_id;
+    surfaceLeft.header.frame_id = DEFAULT_FRAME_ORIGIN_ARM;
     surfaceLeft.id = "surfaceBigLeft";
     surfaceLeft.operation = surfaceBig.ADD;
     surfaceLeft.primitive_poses.push_back(poseBig.pose);
@@ -176,7 +176,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     primitiveBig.dimensions[2] =  zBig;//height
 
     moveit_msgs::CollisionObject surfaceRight;
-    surfaceRight.header.frame_id = poseBig.header.frame_id;
+    surfaceRight.header.frame_id = DEFAULT_FRAME_ORIGIN_ARM;
     surfaceRight.id = "surfaceBigRight";
     surfaceRight.operation = surfaceBig.ADD;
     surfaceRight.primitive_poses.push_back(poseBig.pose);

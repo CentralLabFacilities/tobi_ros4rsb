@@ -101,8 +101,6 @@ void PersonDataPublisher::callback(
 	  p->mutable_body()->mutable_location()->set_z(0);
 	  p->mutable_body()->mutable_location()->set_frame_id("/map");
 
-      std::cout << pTmp.position.x << std::endl;
-
 	  //ProbPos oPos;
 	  //pTmp->getPersGlobalOrientation(oPos);
 	  //Eigen::Quaternionf quat(Eigen::AngleAxisf(oPos.fPos, Eigen::Vector3f::UnitZ()));
@@ -126,8 +124,6 @@ void PersonDataPublisher::callback(
 	rsb::EventPtr event = rsbInformer->createEvent();
 	event->setData(list);
 	event->mutableMetaData().setCreateTime(timestamp);
-    std::cout << "Starting to publish people" << std::endl;
 	this->publish(event);
-    std::cout << "People published" << std::endl << std::endl ;
 }
 }
