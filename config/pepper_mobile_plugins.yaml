@@ -16,10 +16,10 @@ publisher_list:
     topic: /map
   - name: SlamPosPublisher
     scope: /ros4rsb/slampose
-    topic: /pepper/odometry
+    topic: /pepper/pose
   - name: SlamPosPublisher
     scope: /pose/ros4rsb/slampose/tobi
-    topic: /pepper/odometry
+    topic: /pepper/pose
   - name: GlobalPlanPublisher
     scope: /ros4rsb/globalplan
     topic: /move_base/NavfnROS/plan
