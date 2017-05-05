@@ -7,7 +7,6 @@
 
 #include "WaveDetectionPublisher.h"
 #include <rsb/MetaData.h>
-#include <ros/geometry_msgs/PointStamped>
 using namespace rst;
 using namespace boost;
 
