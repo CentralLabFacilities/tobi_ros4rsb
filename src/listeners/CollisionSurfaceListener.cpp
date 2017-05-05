@@ -169,7 +169,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     surfaceLeft.primitive_poses[0].position.y = yMinB;
     surfaceLeft.primitive_poses[0].position.z = surfaceBig.primitive_poses[0].position.z / 2;
 
-    surfaces.push_back(surfaceLeft);
+    //surfaces.push_back(surfaceLeft);
 
     //Transform of the right plane that is created; for comments look at leftplane
     primitiveBig.dimensions[0] =  xBig; //length
@@ -186,7 +186,7 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
     surfaceRight.primitive_poses[0].position.y = yMaxB;
     surfaceRight.primitive_poses[0].position.z = surfaceBig.primitive_poses[0].position.z / 2;
 
-    surfaces.push_back(surfaceRight);
+    //surfaces.push_back(surfaceRight);
 
     sceneInterface.addCollisionObjects(surfaces);
 }
