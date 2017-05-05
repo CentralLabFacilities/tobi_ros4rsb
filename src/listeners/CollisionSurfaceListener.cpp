@@ -108,7 +108,8 @@ void CollisionSurfaceListener::callback(PatchesPtr input) {
         }
 
         geometry_msgs::PoseStamped poseOld;
-        poseOld.pose.position.x = patch.base().translation().x();
+        cout << "plane higher" << endl;
+        poseOld.pose.position.x = patch.base().translation().x() + 0.09;
         poseOld.pose.position.y = patch.base().translation().y();
         poseOld.pose.position.z = patch.base().translation().z();
         poseOld.pose.orientation.w = patch.base().rotation().qw();
