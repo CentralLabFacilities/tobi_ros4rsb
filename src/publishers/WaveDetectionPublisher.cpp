@@ -14,13 +14,13 @@ using namespace boost;
 namespace ros4rsb {
 
     WaveDetectionPublisher::WaveDetectionPublisher(const std::string &topicIn,const std::string &name, ros::NodeHandle &node) : PublisherImpl(name, node) {
-        boost::function<void(const waving_detection::HandCreateConstPtr&) > m0 =
+        boost::function<void(const geometry_msgs::PointStampedConstPtr&) > m0 =
                                                                                     bind(mem_fn(&WaveDetectionPublisher::handCreateCallback), this, _1);
         handCreateSub = node.subscribe("/HandCreate", 1000, m0);
-        boost::function<void(const waving_detection::HandDestroyConstPtr&) > m1 =
+        boost::function<void(const geometry_msgs::PointStampedConstPtr&) > m1 =
                                                                                      bind(mem_fn(&WaveDetectionPublisher::handDestroyCallback), this, _1);
         handDestroySub = node.subscribe("/HandDestroy", 1000, m1);
-        boost::function<void(const waving_detection::HandUpdateConstPtr&) > m2 =
+        boost::function<void(const geometry_msgs::PointStampedConstPtr&) > m2 =
                                                                                     bind(mem_fn(&WaveDetectionPublisher::handUpdateCallback), this, _1);
         handUpdateSub = node.subscribe("/HandUpdate", 1000, m2);
         tfListener = new tf::TransformListener(node);
@@ -28,15 +28,15 @@ namespace ros4rsb {
         ROS_INFO("WaveDetectionPublisher created");
     }
 
-    void WaveDetectionPublisher::handCreateCallback(const waving_detection::HandCreateConstPtr& msg) {
+    void WaveDetectionPublisher::handCreateCallback(const geometry_msgs::PointStampedConstPtr& msg) {
         transformAndPublish(msg->header.stamp.toNSec(), msg->point.x, msg->point.y, msg->point.z);
     }
 
-    void WaveDetectionPublisher::handDestroyCallback(const waving_detection::HandDestroyConstPtr& msg) {
+    void WaveDetectionPublisher::handDestroyCallback(const geometry_msgs::PointStampedConstPtr& msg) {
         //transformAndPublish(msg->header.stamp.toNSec());
     }
 
-    void WaveDetectionPublisher::handUpdateCallback(const waving_detection::HandUpdateConstPtr& msg) {
+    void WaveDetectionPublisher::handUpdateCallback(const geometry_msgs::PointStampedConstPtr& msg) {
         transformAndPublish(msg->header.stamp.toNSec(), msg->point.x, msg->point.y, msg->point.z);
     }
 

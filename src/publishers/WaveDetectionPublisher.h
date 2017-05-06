@@ -24,11 +24,11 @@ class WaveDetectionPublisher : public PublisherImpl<rst::geometry::Pose>{
     public:
        WaveDetectionPublisher(const std::string &topicIn,const std::string &name, ros::NodeHandle &node);
 
-    void handCreateCallback(const waving_detection::HandCreateConstPtr& msg);
+    void handCreateCallback(const geometry_msgs::PointStampedConstPtr& msg);
     
-    void handUpdateCallback(const waving_detection::HandUpdateConstPtr& msg);
+    void handUpdateCallback(const geometry_msgs::PointStampedConstPtr& msg);
     
-    void handDestroyCallback(const waving_detection::HandDestroyConstPtr& msg);
+    void handDestroyCallback(const geometry_msgs::PointStampedConstPtr& msg);
     
 private:
     ros::Subscriber handCreateSub;
