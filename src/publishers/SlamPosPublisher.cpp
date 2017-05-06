@@ -75,7 +75,7 @@ void SlamPosPublisher::global_callback(
 void SlamPosPublisher::local_callback(
 		const nav_msgs::Odometry::ConstPtr &message) {
 
-    ROS_INFO_STREAM("SlamPosPublisher: local callback triggered");
+    //ROS_INFO_STREAM("SlamPosPublisher: local callback triggered");
 	boost::mutex::scoped_lock lock(mutex);
 
 	geometry_msgs::PoseStamped poseOut;
