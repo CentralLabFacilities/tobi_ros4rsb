@@ -52,11 +52,13 @@ namespace ros4rsb {
         data->mutable_rotation()->set_qy(0);
         data->mutable_rotation()->set_qz(0);
         data->mutable_rotation()->set_qw(0);
+        data->mutable_rotation()->set_frame_id("/map");
 
 
-        data->mutable_translation()->set_x(z/1000.0);
-        data->mutable_translation()->set_y(-x/1000.0);
-        data->mutable_translation()->set_z(y/1000.0);
+        data->mutable_translation()->set_x(x);
+        data->mutable_translation()->set_y(y);
+        data->mutable_translation()->set_z(0);
+        data->mutable_translation()->set_frame_id("/map");
 
         rsb::EventPtr event = rsbInformer->createEvent();
         event->setData(data);
