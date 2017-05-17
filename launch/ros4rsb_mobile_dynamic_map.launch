@@ -1,5 +1,5 @@
 <launch>
-    <node name="ros4rsb" pkg="ros4rsb" type="ros4rsb" output="screen" respawn="true" respawn_delay="5" launch-prefix="gdb -ex run --args">
+    <node name="ros4rsb" pkg="ros4rsb" type="ros4rsb" output="screen" respawn="true" respawn_delay="5">
     
         <remap from="/pose" to="RosAria/pose"/>
         <remap from="/scan" to="/scan_merged"/>
