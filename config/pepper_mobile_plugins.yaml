@@ -4,7 +4,7 @@ publisher_list:
     topic: $$$ignored$$$
   - name: LaserDataPublisher
     scope: /ros4rsb/laserscan
-    topic: /depth_to_laser/scan
+    topic: /laser/srd_front/scan
   - name: OdometryDataPublisher
     scope: /ros4rsb/odometryData
     topic: /odom
