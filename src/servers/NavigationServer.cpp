@@ -375,7 +375,7 @@ namespace ros4rsb {
 
     shared_ptr<CommandResult> NavigationServer::navigateToInterrupt(shared_ptr<CoordinateCommand> coor,
             bool relative) {
-        ROS_INFO("call navigate\n");
+        ROS_INFO("call navigate interrupt\n");
         stopping = false;
         move_base_msgs::MoveBaseGoal mbGoal;
         mbGoal.target_pose.header.stamp = ros::Time::now();
@@ -399,7 +399,8 @@ namespace ros4rsb {
 
 
         while(!this->navToInterruptDone) {
-            sleep(0.5);
+            ROS_INFO("call navigate interrupt looping\n");
+            sleep(0.1);
         }
         ROS_INFO("called navigate interrupt\n");
         return this->resultNavTo;
@@ -429,12 +430,14 @@ namespace ros4rsb {
                 this->resultNavTo->set_type(CommandResult_Result_UNKNOWN_ERROR);
                 this->resultNavTo->set_description(state.getText());
         }
+        ROS_INFO("call navigate interrupt done\n");
         this->navToInterruptDone = true;
       }
 
     void NavigationServer::navigateToFeedbackCb(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback)
       {
         if(feedback->replan > 0){
+            ROS_INFO("call navigate interrupt done\n");
             this->navToInterruptDone = true;
             this->resultNavTo->set_type(CommandResult_Result_PATH_BLOCKED);
         }
