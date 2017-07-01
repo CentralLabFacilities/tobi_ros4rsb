@@ -126,6 +126,19 @@ namespace ros4rsb {
         }
     };
 
+    class NavigateToInterruptCb : public LocalServer::Callback<CoordinateCommand, CommandResult> {
+        NavigationServer *server;
+    public:
+
+        NavigateToInterruptCb(NavigationServer *server) {
+            this->server = server;
+        }
+
+        shared_ptr<CommandResult> call(const std::string&, shared_ptr<CoordinateCommand> input) {
+            return server->navigateToInterrupt(input, false);
+        }
+    };
+
     class GetPathToCb : public LocalServer::Callback<CoordinateCommand, Path> {
         NavigationServer *server;
     public:
@@ -188,6 +201,9 @@ namespace ros4rsb {
         this->defaultTurnSpeed = 0.5;
         this->isGoalActive = false;
         this->stopping = false;
+        shared_ptr<CommandResult> resultTmp(new CommandResult());
+        this->resultNavTo = resultTmp;
+        this->navToInterruptDone = false;
         lastTime = ros::Time::now();
         ROS_INFO("starting navigation server");
 
@@ -254,6 +270,7 @@ namespace ros4rsb {
         server->registerMethod("moveRelative", LocalServer::CallbackPtr(new MoveRelativeCb(this)));
         server->registerMethod("moveToCoordinate", LocalServer::CallbackPtr(new MoveToCoordinateCb(this)));
         server->registerMethod("navigateToCoordinate", LocalServer::CallbackPtr(new NavigateToCoordinateCb(this)));
+        server->registerMethod("navigateToInterrupt", LocalServer::CallbackPtr(new NavigateToInterruptCb(this)));
         server->registerMethod("navigateRelative", LocalServer::CallbackPtr(new NavigateRelativeCb(this)));
         server->registerMethod("getPathToCoordinate", LocalServer::CallbackPtr(new GetPathToCb(this)));
         server->registerMethod("getPathToCoordinateLocal", LocalServer::CallbackPtr(new GetPathToCoordinateLocal(this)));
@@ -323,6 +340,7 @@ namespace ros4rsb {
         mbGoal.target_pose.pose.orientation.w = coor->mutable_goal()->mutable_rotation()->qw();
 
         SimpleClientGoalState state = moveBaseClient->sendGoalAndWait(mbGoal, ros::Duration(0.0), ros::Duration(0.0));
+
         shared_ptr<CommandResult> result(new CommandResult());
 
         switch (state.state_) {
@@ -354,6 +372,73 @@ namespace ros4rsb {
         ROS_INFO("called navigate\n");
         return result;
     }
+
+    shared_ptr<CommandResult> NavigationServer::navigateToInterrupt(shared_ptr<CoordinateCommand> coor,
+            bool relative) {
+        ROS_INFO("call navigate\n");
+        stopping = false;
+        move_base_msgs::MoveBaseGoal mbGoal;
+        mbGoal.target_pose.header.stamp = ros::Time::now();
+        if (relative)
+            // set map coordinates
+            mbGoal.target_pose.header.frame_id = "base_link";
+        else
+            mbGoal.target_pose.header.frame_id = "map";
+        ROS_INFO_STREAM("Driving to x:" << coor->mutable_goal()->mutable_translation()->x() << ",y: "
+                << coor->mutable_goal()->mutable_translation()->y() << "relative: " << relative);
+        mbGoal.target_pose.pose.position.x = coor->mutable_goal()->mutable_translation()->x();
+        mbGoal.target_pose.pose.position.y = coor->mutable_goal()->mutable_translation()->y();
+        mbGoal.target_pose.pose.orientation.x = coor->mutable_goal()->mutable_rotation()->qx();
+        mbGoal.target_pose.pose.orientation.y = coor->mutable_goal()->mutable_rotation()->qy();
+        mbGoal.target_pose.pose.orientation.z = coor->mutable_goal()->mutable_rotation()->qz();
+        mbGoal.target_pose.pose.orientation.w = coor->mutable_goal()->mutable_rotation()->qw();
+
+        moveBaseClient->sendGoal(mbGoal,    boost::bind(&NavigationServer::navigateToDoneCb, this, _1, _2),
+                                            SimpleActionClient<move_base_msgs::MoveBaseAction>::SimpleActiveCallback(),
+                                            boost::bind(&NavigationServer::navigateToFeedbackCb, this, _1));
+
+
+        while(!this->navToInterruptDone) {
+            sleep(0.5);
+        }
+        ROS_INFO("called navigate interrupt\n");
+        return this->resultNavTo;
+    }
+
+    void NavigationServer::navigateToDoneCb(const actionlib::SimpleClientGoalState& state,
+                  const move_base_msgs::MoveBaseResultConstPtr& result)
+      {
+        switch (state.state_) {
+            case SimpleClientGoalState::SUCCEEDED:
+                this->resultNavTo->set_type(CommandResult_Result_SUCCESS);
+                break;
+            case SimpleClientGoalState::PENDING:
+                this->resultNavTo->set_type(CommandResult_Result_PATH_BLOCKED);
+                break;
+            case SimpleClientGoalState::LOST:
+                this->resultNavTo->set_type(CommandResult_Result_CUSTOM_ERROR);
+                this->resultNavTo->set_code(1);
+                break;
+            case SimpleClientGoalState::ABORTED:
+                this->resultNavTo->set_type(CommandResult_Result_PATH_BLOCKED);
+                break;
+            case SimpleClientGoalState::PREEMPTED: //is that right?
+                this->resultNavTo->set_type(CommandResult_Result_SUPERSEDED);
+                break;
+            default:
+                this->resultNavTo->set_type(CommandResult_Result_UNKNOWN_ERROR);
+                this->resultNavTo->set_description(state.getText());
+        }
+        this->navToInterruptDone = true;
+      }
+
+    void NavigationServer::navigateToFeedbackCb(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback)
+      {
+        if(feedback->replan > 0){
+            this->navToInterruptDone = true;
+            this->resultNavTo->set_type(CommandResult_Result_INTERRUPTED);
+        }
+      }
 
     shared_ptr<CommandResult> NavigationServer::moveTo(shared_ptr<CoordinateCommand> coor,
             bool relative) {

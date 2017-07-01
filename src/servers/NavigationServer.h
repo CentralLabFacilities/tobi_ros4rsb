@@ -66,12 +66,19 @@ public:
             boost::shared_ptr<rst::navigation::CoordinateCommand> corr, bool relative);
     boost::shared_ptr<rst::navigation::CommandResult> navigateTo(
             boost::shared_ptr<rst::navigation::CoordinateCommand> corr, bool relative);
+    boost::shared_ptr<rst::navigation::CommandResult> navigateToInterrupt(
+            boost::shared_ptr<rst::navigation::CoordinateCommand> corr, bool relative);
     boost::shared_ptr<rst::navigation::Path> getPathTo(
             boost::shared_ptr<rst::navigation::CoordinateCommand> coor, bool relative);
     boost::shared_ptr<rst::navigation::CommandResult> reconfigureNode(
             boost::shared_ptr<std::string> node, boost::shared_ptr<rst::generic::KeyValuePair> key);
     boost::shared_ptr<int64_t> getCostGlobal(
             boost::shared_ptr<rst::navigation::CoordinateCommand> corr);
+
+    void navigateToDoneCb(const actionlib::SimpleClientGoalState& state,
+                  const move_base_msgs::MoveBaseResultConstPtr& result);
+    void navigateToFeedbackCb(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback);
+
     void clearCostmap();
     bool isLocalized();
     boost::shared_ptr<rst::navigation::PlatformCapabilities> getCapabilities();
@@ -101,6 +108,8 @@ private:
     boost::shared_ptr<rst::navigation::CommandResult> reconfigureBool(
     boost::shared_ptr<std::string> nodeName,
     boost::shared_ptr<rst::generic::KeyValuePair> key);
+    boost::shared_ptr<rst::navigation::CommandResult> resultNavTo;
+    bool navToInterruptDone;
 
     geometry_msgs::Pose currentPose;
     boost::mutex poseMutex;
