@@ -436,7 +436,7 @@ namespace ros4rsb {
       {
         if(feedback->replan > 0){
             this->navToInterruptDone = true;
-            this->resultNavTo->set_type(CommandResult_Result_INTERRUPTED);
+            this->resultNavTo->set_type(CommandResult_Result_PATH_BLOCKED);
         }
       }
 
