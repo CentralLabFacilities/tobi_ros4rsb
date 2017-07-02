@@ -437,7 +437,7 @@ namespace ros4rsb {
     void NavigationServer::navigateToFeedbackCb(const move_base_msgs::MoveBaseFeedbackConstPtr& feedback)
       {
         if(feedback->replan > 0){
-            ROS_INFO("call navigate interrupt done\n");
+            ROS_INFO("call navigate interrupt done in feedback\n");
             this->navToInterruptDone = true;
             this->resultNavTo->set_type(CommandResult_Result_PATH_BLOCKED);
         }
