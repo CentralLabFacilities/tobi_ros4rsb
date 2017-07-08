@@ -376,6 +376,7 @@ namespace ros4rsb {
     shared_ptr<CommandResult> NavigationServer::navigateToInterrupt(shared_ptr<CoordinateCommand> coor,
             bool relative) {
         ROS_INFO("call navigate interrupt\n");
+        this->navToInterruptDone = false;
         stopping = false;
         move_base_msgs::MoveBaseGoal mbGoal;
         mbGoal.target_pose.header.stamp = ros::Time::now();
@@ -403,7 +404,6 @@ namespace ros4rsb {
             sleep(0.1);
         }
         ROS_INFO("called navigate interrupt\n");
-        this->navToInterruptDone = false;
         return this->resultNavTo;
     }
 
