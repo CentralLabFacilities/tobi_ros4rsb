@@ -403,6 +403,7 @@ namespace ros4rsb {
             sleep(0.1);
         }
         ROS_INFO("called navigate interrupt\n");
+        this->navToInterruptDone = false;
         return this->resultNavTo;
     }
 
