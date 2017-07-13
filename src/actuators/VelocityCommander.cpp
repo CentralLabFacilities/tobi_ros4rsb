@@ -44,27 +44,27 @@ void VelocityCommander::killRunningAndSet() {
 
 ExitStatus VelocityCommander::checkRunningAndExit() {
     if (!running) { //should not happen! throw exception?
-        cout << "Returning SUCCES while not running" << endl;
+        std::cout << "Returning SUCCES while not running" << std::endl;
         return SUCCESS;
     }
     if (kill) {
         kill = false;
         running = false;
-        cout << "Returning SUPERSEDED" << endl;
+        std::cout << "Returning SUPERSEDED" << std::endl;
         return SUPERSEDED;
     }
     if (should_stop) {
         should_stop = false;
         running = false;
-        cout << "Returning CANCELLED" << endl;
+        std::cout << "Returning CANCELLED" << std::endl;
         return CANCELLED;
     }
     if (!node.ok()) {
         running = false;
-        cout << "Returning NODE_BROKEN" << endl;
+        std::cout << "Returning NODE_BROKEN" << std::endl;
         return NODE_BROKEN;
     }
-    cout << "Returning NODE_BROKEN" << endl;
+    std::cout << "Returning NODE_BROKEN" << std::endl;
     return STILL_RUNNING;
 }
 
