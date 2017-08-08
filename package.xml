@@ -30,6 +30,8 @@
   <depend>moveit_ros_planning_interface</depend>
   <depend>std_srvs</depend>
   
+  <depend>message_runtime</depend>
+  
   <buildtool_depend>catkin</buildtool_depend>
 
 </package>
