@@ -18,7 +18,7 @@
   <build_depend>nav_msgs</build_depend>
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>move_base</build_depend>
-  <build_depend>move_base_msgs</build_depend>
+  <build_depend version_gte="1.14.0">move_base_msgs</build_depend>
   <build_depend>bullet</build_depend>
   <build_depend>p2os_driver</build_depend>
   <build_depend>actionlib_msgs</build_depend>
