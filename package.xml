@@ -27,7 +27,6 @@
   <depend>costmap_2d</depend>
   <depend>dynamic_reconfigure</depend>
   <depend>waving_detection</depend>
-  <depend>move_base</depend>
   <depend>moveit_ros_planning_interface</depend>
   <depend>std_srvs</depend>
   
