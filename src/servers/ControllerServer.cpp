@@ -77,14 +77,14 @@ namespace ros4rsb {
             ROS_INFO("zlift action server ready");
         } else {
             ROS_FATAL("zlift action server failed to connect!");
-            throw ros::Exception("zlift action server failed to connect!");
+            //throw ros::Exception("zlift action server failed to connect!");
         }
 
         if (headClient->isServerConnected()) {
             ROS_INFO("head action server ready");
         } else {
             ROS_FATAL("head action server failed to connect!");
-            throw ros::Exception("head action server failed to connect!");
+            //throw ros::Exception("head action server failed to connect!");
         }
 
         rsb::Factory &factory = rsb::getFactory();
