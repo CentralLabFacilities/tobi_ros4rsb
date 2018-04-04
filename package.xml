@@ -26,7 +26,6 @@
   <depend>base_local_planner</depend>
   <depend>costmap_2d</depend>
   <depend>dynamic_reconfigure</depend>
-  <depend>waving_detection</depend>
   <depend>moveit_ros_planning_interface</depend>
   <depend>std_srvs</depend>
   

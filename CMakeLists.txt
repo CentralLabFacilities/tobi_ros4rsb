@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS message_generation
                                         dynamic_reconfigure
                                         costmap_2d
                                         actionlib
-                                        waving_detection
                                         std_msgs 
                                         geometry_msgs 
                                         sensor_msgs
@@ -31,7 +30,6 @@ catkin_package(CATKIN_DEPENDS message_runtime
                               dynamic_reconfigure
                               costmap_2d
                               actionlib
-                              waving_detection
                               std_msgs
                               geometry_msgs
                               sensor_msgs
@@ -93,7 +91,6 @@ set(SOURCES src/ros4rsb.cpp
             src/publishers/SlamPosPublisher.cpp
             src/publishers/GlobalPlanPublisher.cpp
             src/publishers/PersonDataPublisher.cpp
-            src/publishers/WaveDetectionPublisher.cpp
             src/listeners/BoxListener.cpp
             src/listeners/CollisionSurfaceListener.cpp
             src/listeners/CollisionBoxListener.cpp

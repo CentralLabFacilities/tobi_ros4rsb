@@ -15,7 +15,7 @@
 #include "StallDataPublisher.h"
 #include "SlamMapPublisher.h"
 #include "GlobalPlannerStatePublisher.h"
-#include "WaveDetectionPublisher.h"
+//#include "WaveDetectionPublisher.h"
 
 namespace ros4rsb {
 
@@ -25,8 +25,8 @@ public:
 
        ROS_INFO_STREAM("Building publisher " << name << ", topic: " << topicIn << ", scope: " << scopeOut);
 
-       if(name == "WaveDetectionPublisher")
-           return WaveDetectionPublisher::Ptr(new WaveDetectionPublisher(topicIn, scopeOut, node));
+//       if(name == "WaveDetectionPublisher")
+//           return WaveDetectionPublisher::Ptr(new WaveDetectionPublisher(topicIn, scopeOut, node));
        if(name == "GlobalPlanPublisher")
            return GlobalPlanPublisher::Ptr(new GlobalPlanPublisher(topicIn, scopeOut, node));
        if(name == "LaserDataPublisher")
